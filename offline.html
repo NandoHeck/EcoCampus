@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#15296f">
+  <title>Offline — EcoCampus</title>
+
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32.png">
+  <link rel="apple-touch-icon" href="/img/apple-touch-icon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
+  <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js" defer></script>
+
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/pages.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+</head>
+
+<body class="page-bg notfound">
+  <div class="state__icon" aria-hidden="true" style="width:96px;height:96px;font-size:48px;margin-bottom:.5rem">
+    <iconify-icon icon="lucide:wifi-off"></iconify-icon>
+  </div>
+
+  <div class="notfound__code" style="font-size:clamp(52px,10vw,88px)">Sem conexão</div>
+
+  <h1>Você está offline</h1>
+  <p>
+    Não conseguimos alcançar a EcoCampus agora. As páginas que você já visitou
+    continuam disponíveis — assim como os anúncios carregados anteriormente.
+  </p>
+
+  <div class="hero-cta" style="margin-top:.6rem">
+    <button class="btn-primary" onclick="location.reload()">
+      <iconify-icon icon="lucide:refresh-cw"></iconify-icon> Tentar novamente
+    </button>
+    <a href="/" class="btn-ghost">
+      <iconify-icon icon="lucide:home"></iconify-icon> Ir para o início
+    </a>
+  </div>
+
+  <script>
+    // Reload automático assim que a conexão voltar
+    window.addEventListener('online', () => location.reload());
+  </script>
+</body>
+</html>

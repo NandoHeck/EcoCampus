@@ -8,11 +8,20 @@
     "postinstall": "npm install --prefix backend",
     "start": "node backend/server.js",
     "dev": "node --watch backend/server.js",
-    "seed": "node backend/src/infrastructure/seed/seed.js"
+    "seed": "node backend/src/infrastructure/seed/seed.js",
+    "icons": "node scripts/generate-icons.js"
+  },
+  "devDependencies": {
+    "sharp": "^0.33.5"
   },
   "engines": {
     "node": ">=18"
   },
-  "keywords": ["marketplace", "universidade", "economia-circular", "estudantes"],
+  "keywords": [
+    "marketplace",
+    "universidade",
+    "economia-circular",
+    "estudantes"
+  ],
   "author": "EcoCampus"
 }

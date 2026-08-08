@@ -4,7 +4,7 @@
  */
 
 import Auth from './auth.js';
-import { setupScrollReveal, setupRipple, progressiveImages, setupMenu, escapeHtml, avatarBlock } from './ui.js';
+import { setupScrollReveal, setupRipple, progressiveImages, setupMenu, escapeHtml, avatarBlock, toast } from './ui.js';
 
 const NAV_ITEMS = [
   { href: '/pages/dashboard.html', label: 'Descobrir', icon: 'lucide:compass' },
@@ -147,6 +147,106 @@ export function bootstrapPage(opts = {}) {
   setupScrollReveal();
   setupRipple();
   progressiveImages();
+  registerServiceWorker();
+  setupInstallPrompt();
+  handleOnlineOfflineEvents();
+}
+
+// -----------------------------------------------------------------------------
+// PWA — registro do Service Worker
+// -----------------------------------------------------------------------------
+function registerServiceWorker() {
+  if (!('serviceWorker' in navigator)) return;
+  // Registro após o load para não competir com o first paint
+  window.addEventListener('load', async () => {
+    try {
+      const reg = await navigator.serviceWorker.register('/sw.js', { scope: '/' });
+
+      // Detecta nova versão disponível
+      reg.addEventListener('updatefound', () => {
+        const installing = reg.installing;
+        if (!installing) return;
+        installing.addEventListener('statechange', () => {
+          if (installing.state === 'installed' && navigator.serviceWorker.controller) {
+            showUpdatePrompt(reg);
+          }
+        });
+      });
+    } catch (err) {
+      // Sem PWA — a app continua funcionando normalmente
+      console.warn('[PWA] Service Worker não registrado:', err);
+    }
+  });
+
+  // Recarrega automaticamente quando o novo SW assume o controle
+  let refreshing = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (refreshing) return;
+    refreshing = true;
+    window.location.reload();
+  });
+}
+
+function showUpdatePrompt(reg) {
+  const bar = document.createElement('div');
+  bar.className = 'toast toast--info';
+  bar.style.cssText = 'position:fixed;left:50%;bottom:calc(1rem + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:250;';
+  bar.innerHTML = `
+    <iconify-icon icon="lucide:download-cloud"></iconify-icon>
+    <span>Nova versão disponível.</span>
+    <button class="btn-primary btn-sm" style="margin-left:.5rem;padding:.35rem .85rem;font-size:12px" data-update>
+      Atualizar
+    </button>
+  `;
+  document.body.appendChild(bar);
+  bar.querySelector('[data-update]').addEventListener('click', () => {
+    if (reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+    bar.remove();
+  });
+  setTimeout(() => bar.remove(), 15000);
+}
+
+// -----------------------------------------------------------------------------
+// PWA — captura do beforeinstallprompt (botão "Instalar app")
+// -----------------------------------------------------------------------------
+let deferredInstallPrompt = null;
+
+function setupInstallPrompt() {
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    document.dispatchEvent(new CustomEvent('pwa:installable'));
+  });
+
+  window.addEventListener('appinstalled', () => {
+    deferredInstallPrompt = null;
+    try { toast('EcoCampus instalado 🎉', { type: 'success' }); } catch {}
+  });
+}
+
+/** Dispara o prompt nativo de instalação (chamado pelo botão "Instalar app"). */
+export async function promptInstall() {
+  if (!deferredInstallPrompt) return { outcome: 'unavailable' };
+  deferredInstallPrompt.prompt();
+  const choice = await deferredInstallPrompt.userChoice;
+  deferredInstallPrompt = null;
+  return choice; // { outcome: 'accepted'|'dismissed' }
+}
+
+export function isInstallable() {
+  return Boolean(deferredInstallPrompt);
+}
+
+// -----------------------------------------------------------------------------
+// UX — feedback online/offline global
+// -----------------------------------------------------------------------------
+function handleOnlineOfflineEvents() {
+  window.addEventListener('offline', () => {
+    try { toast('Você está offline. Alguns recursos podem não funcionar.', { type: 'info', duration: 5000 }); } catch {}
+  });
+  window.addEventListener('online', () => {
+    try { toast('Conexão restaurada.', { type: 'success', duration: 2500 }); } catch {}
+  });
 }
 
 export { Auth };

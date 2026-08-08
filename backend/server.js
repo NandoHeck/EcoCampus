@@ -65,7 +65,21 @@ async function bootstrap() {
   app.use(express.json({ limit: '2mb' }));
 
   const staticRoot = path.resolve(__dirname, '..');
-  app.use(express.static(staticRoot, { extensions: ['html'] }));
+  app.use(express.static(staticRoot, {
+    extensions: ['html'],
+    setHeaders(res, filePath) {
+      // MIME correto para o manifest do PWA
+      if (filePath.endsWith('.webmanifest')) {
+        res.setHeader('Content-Type', 'application/manifest+json; charset=utf-8');
+      }
+      // O SW nunca deve ficar em cache do browser — precisa ser sempre "fresh"
+      // para que updates cheguem imediatamente.
+      if (filePath.endsWith(`${path.sep}sw.js`) || filePath.endsWith('/sw.js')) {
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        res.setHeader('Service-Worker-Allowed', '/');
+      }
+    }
+  }));
 
   app.use('/api', buildRouter({ adController, userController, authRequired, authOptional }));
 

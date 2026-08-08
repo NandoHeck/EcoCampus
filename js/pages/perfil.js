@@ -1,4 +1,4 @@
-import { bootstrapPage, Auth } from '../app.js';
+import { bootstrapPage, Auth, promptInstall, isInstallable } from '../app.js';
 import api from '../api.js';
 import { renderAdCard, skeletonCards, emptyState, errorState, escapeHtml, toast, confirmDialog, avatarBlock, safeUrl } from '../ui.js';
 
@@ -24,11 +24,26 @@ function renderHead() {
       <a class="btn-primary" href="/pages/criar-anuncio.html">
         <iconify-icon icon="lucide:plus"></iconify-icon> Novo anúncio
       </a>
+      ${isInstallable() ? `
+        <button class="btn-ghost" data-install>
+          <iconify-icon icon="lucide:download"></iconify-icon> Instalar app
+        </button>` : ''}
       <button class="btn-ghost" data-logout>
         <iconify-icon icon="lucide:log-out"></iconify-icon> Sair
       </button>
     </div>
   `;
+
+  const installBtn = mount.querySelector('[data-install]');
+  if (installBtn) {
+    installBtn.addEventListener('click', async () => {
+      const res = await promptInstall();
+      if (res.outcome === 'accepted') installBtn.remove();
+    });
+  }
+  // Se o evento chegar depois do render, re-renderiza o head para mostrar o botão
+  document.addEventListener('pwa:installable', () => renderHead(), { once: true });
+
   mount.querySelector('[data-logout]').addEventListener('click', async () => {
     const ok = await confirmDialog({ title: 'Sair da conta?', message: 'Você precisará entrar novamente.', confirmText: 'Sair' });
     if (!ok) return;

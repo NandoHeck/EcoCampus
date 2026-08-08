@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="EcoCampus">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="30%" r="90%">
+      <stop offset="0%" stop-color="#3055d8"/>
+      <stop offset="55%" stop-color="#1e3a8a"/>
+      <stop offset="100%" stop-color="#15296f"/>
+    </radialGradient>
+    <linearGradient id="dot" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fde047"/>
+      <stop offset="100%" stop-color="#facc15"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Fundo full-bleed (maskable — a máscara do OS pode cortar até 20% de cada borda) -->
+  <rect width="512" height="512" fill="url(#bg)"/>
+
+  <!-- Conteúdo dentro do "safe area" (círculo central 80%) -->
+  <g transform="translate(256 256)">
+    <!-- anéis -->
+    <g fill="none" stroke="rgba(255,255,255,.14)" stroke-width="3">
+      <circle r="120"/>
+      <circle r="85"/>
+      <circle r="50"/>
+    </g>
+    <!-- folhinha -->
+    <path d="M0 -75
+             C 55 -75, 100 -35, 100 15
+             C 100 65, 55 105, 0 105
+             C -18 105, -35 100, -50 92
+             C -50 40, -30 -10, 10 -40
+             C -22 -18, -42 24, -42 70
+             C -50 60, -60 40, -60 15
+             C -60 -35, -45 -75, 0 -75 Z"
+          fill="url(#dot)"/>
+  </g>
+</svg>

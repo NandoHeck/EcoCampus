@@ -1,7 +1,7 @@
 {
   "name": "ecocampus-backend",
   "version": "1.0.0",
-  "description": "API REST do marketplace universitário EcoCampus (Clean Architecture, Express + JSON File).",
+  "description": "API REST do marketplace universitário EcoCampus (Clean Architecture, Express + SQLite/JSON).",
   "main": "server.js",
   "type": "commonjs",
   "scripts": {
@@ -15,5 +15,8 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.19.2"
+  },
+  "optionalDependencies": {
+    "better-sqlite3": "^11.7.0"
   }
 }

@@ -185,13 +185,9 @@ async function seed({ userRepository, adRepository }) {
 module.exports = seed;
 
 if (require.main === module) {
-  const JsonDatabase = require('../persistence/JsonDatabase');
-  const AdRepository = require('../persistence/AdRepository');
-  const UserRepository = require('../persistence/UserRepository');
-  const { DB_PATH } = require('../../config/env');
-  const db = new JsonDatabase(DB_PATH);
-  seed({
-    userRepository: new UserRepository(db),
-    adRepository: new AdRepository(db)
-  }).then(() => process.exit(0));
+  const buildPersistence = require('../persistence/buildPersistence');
+  const { userRepository, adRepository, driver, filePath } = buildPersistence();
+  // eslint-disable-next-line no-console
+  console.log(`[seed] driver=${driver}  path=${filePath}`);
+  seed({ userRepository, adRepository }).then(() => process.exit(0));
 }

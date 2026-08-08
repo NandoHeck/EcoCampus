@@ -23,8 +23,12 @@ desktop.ini
 .env.local
 .env.*.local
 
-# Runtime data (persistência do JSON - será recriada pelo seed)
+# Runtime data (persistência será recriada pelo seed automaticamente)
 backend/data/db.json
+backend/data/*.db
+backend/data/*.db-journal
+backend/data/*.db-wal
+backend/data/*.db-shm
 
 # Design system refs (assets externos)
 design_system/refs/

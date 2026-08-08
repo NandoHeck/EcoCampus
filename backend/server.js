@@ -4,11 +4,9 @@ const path = require('path');
 const express = require('express');
 const cors = require('cors');
 
-const { PORT, HOST, DB_PATH, CORS_ORIGIN } = require('./src/config/env');
+const { PORT, HOST, CORS_ORIGIN } = require('./src/config/env');
 
-const JsonDatabase = require('./src/infrastructure/persistence/JsonDatabase');
-const AdRepository = require('./src/infrastructure/persistence/AdRepository');
-const UserRepository = require('./src/infrastructure/persistence/UserRepository');
+const buildPersistence = require('./src/infrastructure/persistence/buildPersistence');
 
 const CreateAd = require('./src/application/use-cases/ads/CreateAd');
 const ListAds = require('./src/application/use-cases/ads/ListAds');
@@ -33,10 +31,9 @@ const { notFound, errorHandler } = require('./src/presentation/middlewares/error
 const seed = require('./src/infrastructure/seed/seed');
 
 async function bootstrap() {
-  const db = new JsonDatabase(DB_PATH);
-
-  const userRepository = new UserRepository(db);
-  const adRepository = new AdRepository(db);
+  const { userRepository, adRepository, driver, filePath } = buildPersistence();
+  // eslint-disable-next-line no-console
+  console.log(`[db] driver=${driver}  path=${filePath}`);
 
   await seed({ userRepository, adRepository });
 

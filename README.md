@@ -76,7 +76,8 @@ _Adicione aqui prints reais após rodar a aplicação._
 - **Node.js** ≥ 18
 - **Express** 4.19 — framework HTTP
 - **cors** 2.8 — Cross-Origin Resource Sharing
-- Persistência em **arquivo JSON** (`backend/data/db.json`)
+- **better-sqlite3** 11.7 — banco relacional embarcado (optional dependency com fallback automático para JSON)
+- Persistência dual: **SQLite** em produção, **JSON File** como fallback local
 - Autenticação **stateless** via token custom (`<userId>.<hash>`) — SHA-256 + salt
 - Arquitetura em camadas — **Clean Architecture** (domain / application / infrastructure / presentation)
 
@@ -219,6 +220,9 @@ Ver `.env.example` na raiz. Todas são **opcionais em desenvolvimento** (default
 | `HOST` | `0.0.0.0` | Bind host. Obrigatório em containers. |
 | `CORS_ORIGIN` | `*` | Origem permitida em CORS. Restrinja em produção. |
 | `PASSWORD_SALT` | `ecocampus_salt_v1` | Salt do hash SHA-256. **Nunca use o default em produção.** |
+| `DB_DRIVER` | `sqlite` | `sqlite` (default) ou `json`. Fallback automático para JSON se `better-sqlite3` não puder ser carregado. |
+| `DB_PATH_SQLITE` | `backend/data/ecocampus.db` | Caminho do arquivo SQLite. |
+| `DB_PATH_JSON` | `backend/data/db.json` | Caminho do arquivo JSON (usado como fallback). |
 
 ---
 
@@ -381,8 +385,8 @@ Instruções completas passo-a-passo em [`DEPLOY.md`](./DEPLOY.md).
 | Decisão | Justificativa |
 |---|---|
 | **HTML/CSS/JS puro** (sem React/Vue) | Aceito pelo requisito. Sem build step, código transparente e defensável em entrevista. |
-| **Clean Architecture no backend** | Facilita trocar persistência (JSON → SQLite → Postgres) sem tocar em regras. |
-| **Persistência em arquivo JSON** | Zero-config, reprodutível, cumpre o requisito. Trocar por SQLite é uma nova classe implementando `IAdRepository`. |
+| **Clean Architecture no backend** | Permitiu adicionar SQLite depois sem tocar em uma única regra de negócio — bastou criar `SqliteAdRepository`/`SqliteUserRepository` implementando as mesmas interfaces `IAdRepository`/`IUserRepository`. |
+| **Persistência dual (SQLite + JSON fallback)** | SQLite via `better-sqlite3` como default (bônus "banco real" + persistência estável em produção). Se o binário nativo não estiver disponível localmente (Node novo sem prebuild), cai automaticamente para JSON com warning — o dev não precisa instalar Visual Studio Build Tools. |
 | **Token custom em vez de JWT** | O requisito aceita "autenticação básica ou separação por IDs". Token `<userId>.<hash>` é auditável, mais simples e cumpre o objetivo. |
 | **SHA-256 + salt em vez de bcrypt** | Trade-off de simplicidade. Bcrypt seria melhor para produção real; SHA-256+salt é aceitável para o escopo acadêmico e não adiciona dependência. |
 | **Iconify via CDN** | Milhares de ícones sem impacto no bundle. Cacheado pelo SW. |
@@ -403,7 +407,6 @@ Instruções completas passo-a-passo em [`DEPLOY.md`](./DEPLOY.md).
 
 ## 🗺️ Próximos passos
 
-- [ ] Migrar persistência para **SQLite** com `better-sqlite3` (bônus "banco real" + persistência estável na demo).
 - [ ] Testes automatizados de API com `node --test` (5-8 casos).
 - [ ] Upload real de imagens (Cloudinary free tier).
 - [ ] Sistema de notificações in-app.

@@ -75,6 +75,8 @@ _Adicione aqui prints reais após rodar a aplicação._
 ### Backend
 - **Node.js** ≥ 18
 - **Express** 4.19 — framework HTTP
+- **helmet** 7.1 — cabeçalhos de segurança (X-Frame-Options, HSTS, X-Content-Type-Options etc.)
+- **express-rate-limit** 7.4 — proteção contra brute-force (10 tentativas/15min em auth, 300 req/15min geral)
 - **cors** 2.8 — Cross-Origin Resource Sharing
 - **better-sqlite3** 11.7 — banco relacional embarcado (optional dependency com fallback automático para JSON)
 - Persistência dual: **SQLite** em produção, **JSON File** como fallback local
@@ -357,7 +359,25 @@ Lighthouse → aba PWA:
 
 ### Testes automatizados
 
-_Planejado para Fase 6. Ver "Próximos passos"._
+**Ferramenta**: `node --test` (built-in do Node 18+, zero dependência externa).
+
+```bash
+npm test              # roda todas as suites
+npm run test:watch    # roda em watch mode (dev)
+```
+
+**Cobertura (41 testes, ~600ms)**:
+
+| Suite | Tipo | O que testa |
+|---|---|---|
+| `users.test.js` | Integração | health, register (sucesso/duplicado/inválido), login (sucesso/senha errada), auth middleware, update de perfil |
+| `ads.test.js` | Integração | CRUD completo, filtros (categoria/tipo/busca), autorização (dono vs não-dono), incremento de views |
+| `favorites.test.js` | Integração | add/remove/list favoritos, autorização, adId inexistente |
+| `validator.test.js` | Unitário | assertRequired, assertEmail, assertLength, assertEnum, sanitizeString |
+
+**Isolamento**: cada suite cria um servidor Express em porta aleatória com persistência em arquivo JSON temporário (limpo ao final). Rate-limit desativado nos testes. Sem interferência entre suites — podem rodar em paralelo.
+
+**Extração da `createApp`**: para permitir testes de integração sem tocar em `server.js`, a criação do Express foi extraída para `src/createApp.js` (recebe repositórios por injeção). Isso segue o padrão comum em Node/Express testing.
 
 ---
 
@@ -407,11 +427,11 @@ Instruções completas passo-a-passo em [`DEPLOY.md`](./DEPLOY.md).
 
 ## 🗺️ Próximos passos
 
-- [ ] Testes automatizados de API com `node --test` (5-8 casos).
 - [ ] Upload real de imagens (Cloudinary free tier).
 - [ ] Sistema de notificações in-app.
-- [ ] `helmet` + rate limiting no backend.
-- [ ] GitHub Actions rodando testes a cada push.
+- [ ] GitHub Actions rodando `npm test` a cada push.
+- [ ] Migração para Postgres real (Neon/Supabase) se o projeto crescer.
+- [ ] Refresh tokens + JWT com expiração.
 
 ---
 

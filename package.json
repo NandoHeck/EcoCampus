@@ -10,7 +10,8 @@
     "dev": "node --watch backend/server.js",
     "seed": "node backend/src/infrastructure/seed/seed.js",
     "icons": "node scripts/generate-icons.js",
-    "set-api": "node scripts/set-api-url.js"
+    "set-api": "node scripts/set-api-url.js",
+    "test": "npm test --prefix backend"
   },
   "devDependencies": {
     "sharp": "^0.33.5"

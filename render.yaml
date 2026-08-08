@@ -1,6 +1,8 @@
+# =============================================================================
 # Render Blueprint — https://render.com/docs/infrastructure-as-code
 # Descreve o serviço do backend do EcoCampus.
 # No painel do Render: "New" → "Blueprint" → aponta pra este repositório.
+# =============================================================================
 
 services:
   - type: web
@@ -14,12 +16,21 @@ services:
     startCommand: node server.js
     healthCheckPath: /api/health
     autoDeploy: true
+
     envVars:
       - key: NODE_VERSION
         value: 20
       - key: NODE_ENV
         value: production
+      # Permite qualquer origem por padrão; após o deploy do Netlify,
+      # troque este valor no painel do Render para restringir ao domínio real.
       - key: CORS_ORIGIN
         value: "*"
+      # Salt do hash de senhas — gerado uma vez pelo Render, permanece fixo.
       - key: PASSWORD_SALT
         generateValue: true
+
+    # No plano free do Render o disco é efêmero: o db.json/data.db é
+    # recriado a cada restart e o seed roda novamente populando 3 usuários
+    # demo e 10 anúncios. Para persistência real, migre para o plano Starter
+    # ($7/mês) e adicione um bloco `disk:` apontando para /opt/render/project/src/data.

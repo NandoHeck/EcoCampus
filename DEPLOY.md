@@ -1,103 +1,162 @@
-# 🚀 Deploy — Backend no Render + Frontend no Netlify
+# 🚀 Deploy — Guia passo-a-passo
 
-## Parte 1 — Subir o código para o GitHub
+Backend no **Render** (Node.js) + Frontend no **Netlify** (estático PWA).
 
-```bash
-# Na raiz do projeto (já está inicializado por este script)
-git remote add origin https://github.com/SEU_USUARIO/ecocampus.git
-git branch -M main
-git push -u origin main
-```
-
-Se ainda não criou o repositório: https://github.com/new  → nome `ecocampus` → **privado ou público** → **NÃO** marque "Add README" nem gitignore (o repo local já tem).
+Tempo estimado: **15–20 minutos**.
 
 ---
 
-## Parte 2 — Backend no Render (Blueprint)
+## Parte 1 — Backend no Render
 
-1. Acesse **https://dashboard.render.com/** e faça login (crie conta se não tiver — dá pra usar GitHub).
-2. Clique em **"New +"** → **"Blueprint"**.
-3. Conecte sua conta do GitHub e escolha o repositório `ecocampus`.
-4. O Render detecta o `render.yaml` automaticamente e mostra o serviço `ecocampus-api`.
-5. Clique em **"Apply"**. O primeiro build leva 2–3 minutos.
-6. Quando ficar verde ("Live"), copie a URL — algo como
-   `https://ecocampus-api.onrender.com`
+### 1.1 Criar conta e Blueprint
 
-**Teste rápido**: abra `https://ecocampus-api.onrender.com/api/health`
-→ deve retornar `{"status":"ok",...}`
+1. Acesse **https://dashboard.render.com/** (pode logar com GitHub).
+2. Clique em **"New +"** (canto superior direito) → **"Blueprint"**.
+3. **"Connect a repository"** → autorize o Render a acessar seu GitHub.
+4. Selecione o repositório **`NandoHeck/EcoCampus`**.
+5. O Render detecta automaticamente o `render.yaml` e mostra o serviço `ecocampus-api` com plano free.
+6. Clique em **"Apply"**.
+7. Aguarde o build (2–3 minutos). Status vai de "Building" → "Deploying" → **"Live"** (verde).
 
-> ⚠️ **Plano free**: o serviço "dorme" após 15 min sem tráfego. A primeira
-> requisição depois do sleep leva ~30s (cold start). E o disco é efêmero — o
-> `db.json` zera a cada deploy/restart, e o seed roda de novo.
+### 1.2 Copiar a URL
+
+Na página do serviço, no topo, aparece algo como:
+```
+https://ecocampus-api.onrender.com
+```
+Copie essa URL. **Guarde ela — vai ser usada em duas etapas.**
+
+### 1.3 Testar o backend
+
+Abra em outra aba:
+```
+https://ecocampus-api.onrender.com/api/health
+```
+Deve retornar: `{"status":"ok","ts":"..."}`
+
+Se demorar ~30s na primeira request, é o **cold start** do plano free (normal). Depois fica rápido.
+
+---
+
+## Parte 2 — Apontar o Frontend para o Backend em produção
+
+No seu terminal, na raiz do projeto:
+
+```bash
+npm run set-api https://ecocampus-api.onrender.com/api
+```
+
+> Substitua pela URL exata que o Render te deu. O script atualiza a
+> `<meta name="ecocampus-api">` em todos os 12 HTMLs de uma vez.
+
+Faça commit e push:
+
+```bash
+git add .
+git commit -m "config: point frontend to production API"
+git push
+```
 
 ---
 
 ## Parte 3 — Frontend no Netlify
 
-### 3.1 — Apontar o frontend para o backend em produção
+### 3.1 Método rápido — Drag & Drop
 
-Edite **cada HTML da pasta `/` e `/pages/`** e adicione uma linha no `<head>`:
+1. Acesse **https://app.netlify.com/drop**
+2. Arraste a **pasta raiz** do projeto (`Economia Circular agora vai/`) para a área indicada.
+3. Aguarde ~30s. O site sobe com URL aleatória tipo `https://amazing-name-abc123.netlify.app`.
+4. (Opcional) Renomeie em **Site settings → Change site name**.
 
-```html
-<meta name="ecocampus-api" content="https://ecocampus-api.onrender.com/api">
+### 3.2 Método com GitHub (recomendado — deploy automático a cada push)
+
+1. Acesse **https://app.netlify.com/** → **"Add new site"** → **"Import an existing project"**.
+2. **"Deploy with GitHub"** → autorize → selecione `NandoHeck/EcoCampus`.
+3. Configurações:
+   - **Branch**: `main`
+   - **Base directory**: _(deixe vazio)_
+   - **Build command**: _(deixe vazio)_
+   - **Publish directory**: `.`
+   > O `netlify.toml` na raiz já configura todos os headers e redirects.
+4. **"Deploy site"** → aguarde 30s → status "Published".
+5. Anote a URL (ex.: `https://ecocampus.netlify.app`).
+
+---
+
+## Parte 4 — Restringir CORS (segurança)
+
+Com a URL do Netlify em mãos, restrinja o backend a aceitar apenas dela:
+
+1. No painel do Render → seu serviço `ecocampus-api` → **Environment** (menu lateral).
+2. Encontre a variável `CORS_ORIGIN` (valor atual: `*`).
+3. Edite para o **domínio exato** do Netlify:
+   ```
+   https://ecocampus.netlify.app
+   ```
+   ⚠️ Sem barra no final, com `https://`.
+4. **Save changes** → o serviço reinicia sozinho (~30s).
+
+---
+
+## Parte 5 — Atualizar o README com os links reais
+
+Edite `README.md` na seção **"🔗 Links"** no topo:
+
+```markdown
+- **Repositório**: https://github.com/NandoHeck/EcoCampus
+- **Frontend (produção)**: https://ecocampus.netlify.app
+- **API (produção)**: https://ecocampus-api.onrender.com
+- **Healthcheck**: https://ecocampus-api.onrender.com/api/health
 ```
 
-Coloque logo depois do `<title>`. Substitua pela URL real que o Render te deu.
+Commit e push:
 
-Ou, se preferir uma linha só: dentro do `<head>` de cada HTML, adicione:
-
-```html
-<script>window.__ECOCAMPUS_API__ = "https://ecocampus-api.onrender.com/api";</script>
+```bash
+git add README.md
+git commit -m "docs: add production URLs to README"
+git push
 ```
-
-### 3.2 — Subir para o Netlify
-
-**Método rápido (drag-and-drop)**:
-1. Vá em https://app.netlify.com/drop
-2. Arraste a **pasta raiz do projeto**.
-3. Pronto — URL tipo `https://random-name.netlify.app`.
-
-**Método com GitHub (recomendado, deploy automático)**:
-1. https://app.netlify.com/ → "Add new site" → "Import an existing project".
-2. Conecte GitHub, escolha o repo.
-3. Build settings: **deixe vazio**. Publish directory: `.` (o `netlify.toml` já configura isso).
-4. Deploy.
-
-### 3.3 — Ajustar CORS (opcional, recomendado)
-
-Depois que tiver a URL do Netlify, restrinja o CORS do backend:
-
-1. No painel do Render → seu serviço → **Environment** → edite `CORS_ORIGIN`.
-2. Valor: `https://seu-site.netlify.app` (a URL exata que o Netlify deu).
-3. Save → o serviço reinicia sozinho.
-
-Agora só o seu Netlify pode consumir a API.
 
 ---
 
 ## ✅ Verificação final
 
-1. Abra o site do Netlify.
-2. Clique em "Entrar" → tente logar com `demo@ecocampus.edu / demo1234`.
-3. Se o backend estiver "dormindo", pode demorar 30s na primeira request.
-4. Faça um cadastro novo e crie um anúncio → confere se aparece na listagem.
+1. Abra o site do Netlify no celular.
+2. Chrome Android: menu ⋮ → **"Instalar app"** → app aparece na tela inicial.
+3. Faça login: `demo@ecocampus.edu` / `demo1234` (pode demorar 30s se o backend acordar).
+4. Crie um anúncio → confirma que aparece na listagem.
+5. DevTools → Network → **Offline** → recarregue → app continua funcionando (SW ativo).
 
 ---
 
-## Troubleshooting
+## ⚠️ Limitações do plano free
+
+| Serviço | Limite | Impacto |
+|---|---|---|
+| Render | Dorme após 15min sem tráfego | Cold start ~30s na primeira request |
+| Render | Disco efêmero | `db.json`/`data.db` zera a cada restart; seed rerroda |
+| Netlify | 100GB banda/mês, sem sleep | Nenhum para uso normal |
+
+**Se quiser persistência real** (recomendado só se for demo importante):
+- Render **Starter plan ($7/mês)**: sem sleep + adicionar `disk:` no `render.yaml`.
+- Ou migrar para **PostgreSQL grátis** (Neon, Supabase) — requer refactor do backend.
+
+---
+
+## 🆘 Troubleshooting
 
 | Erro | Causa | Solução |
 |---|---|---|
-| **CORS blocked** no console | `CORS_ORIGIN` do Render não bate com URL do Netlify | Corrigir env var no Render (com https:// e sem barra no fim) |
-| **HTTP 502 / demora 30s** | Backend hibernou (plano free) | Normal. Espere a primeira request "acordar" o serviço |
-| **404 em todos endpoints** | `<meta name="ecocampus-api">` esquecido | Adicionar em todos os HTMLs |
-| **Dados sumiram** | Deploy/restart zerou o `db.json` | Esperado no plano free. Migrar para Postgres/SQLite persistente |
-| **Login demo não funciona** | `PASSWORD_SALT` mudou entre deploys | Sim: o seed usa o salt atual. Rode `npm run seed` remotamente ou apague o db |
+| `CORS blocked` no console | `CORS_ORIGIN` no Render não bate | Corrigir env var (com `https://`, sem barra final) |
+| `HTTP 502` ou timeout | Backend hibernou | Normal no plano free; espere 30s |
+| Login demo não funciona | `PASSWORD_SALT` mudou entre deploys | Não vai mudar — o Render fixa o salt uma única vez |
+| Site não instala | Faltando HTTPS ou manifest inválido | Ambos já resolvidos; se acontecer, verificar DevTools → Application → Manifest |
+| Dados sumiram | Restart zerou disco | Comportamento esperado do plano free; a base é recriada pelo seed |
 
 ---
 
-## Custos
+## Custos totais
 
-- **Render free**: $0/mês, com sleep de 15min e disco efêmero.
-- **Render Starter**: $7/mês, sem sleep, disco persistente.
-- **Netlify free**: $0/mês, 100GB banda, sem sleep.
+- Frontend: **$0/mês** (Netlify free tier)
+- Backend: **$0/mês** (Render free tier) — ou **$7/mês** (Starter, sem sleep + disco persistente)
+- Domínio custom (opcional): **$10–15/ano**

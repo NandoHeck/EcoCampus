@@ -1,20 +1,63 @@
-# Configuração do deploy do FRONTEND no Netlify.
-# O backend Node/Express NÃO roda no Netlify — precisa estar hospedado
-# separadamente (Render, Railway, Fly.io, etc).
-#
-# 1) Suba o /backend em um dos serviços acima.
-# 2) Anote a URL pública (ex.: https://ecocampus.onrender.com).
-# 3) Nos <head> dos HTML, adicione:
-#       <meta name="ecocampus-api" content="https://ecocampus.onrender.com/api">
-#    OU defina via variável antes de importar api.js:
-#       <script>window.__ECOCAMPUS_API__ = "https://ecocampus.onrender.com/api";</script>
-# 4) Faça o deploy do frontend no Netlify (arrastar pasta ou GitHub).
+# =============================================================================
+# Netlify — configuração do frontend estático do EcoCampus.
+# O backend Node/Express NÃO roda no Netlify; hospede em Render/Railway/Fly.io
+# e aponte via <meta name="ecocampus-api"> nos HTMLs.
+# =============================================================================
 
 [build]
   publish = "."
-  # Não há build step (HTML/CSS/JS puros)
+  # Sem build step: HTML/CSS/JS puros
 
-# SPA fallback (opcional): páginas inexistentes vão para a 404 personalizada
+# -----------------------------------------------------------------------------
+# Headers
+# -----------------------------------------------------------------------------
+
+# Service Worker NUNCA deve ficar em cache — precisa buscar sempre
+# a versão nova para o mecanismo de update funcionar.
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+    Service-Worker-Allowed = "/"
+
+# Manifest com MIME correto para o navegador entender.
+[[headers]]
+  for = "/manifest.webmanifest"
+  [headers.values]
+    Content-Type = "application/manifest+json; charset=utf-8"
+    Cache-Control = "public, max-age=3600"
+
+# Ícones e imagens podem ser cacheados por 1 ano (assets estáticos versionados).
+[[headers]]
+  for = "/img/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# CSS e JS mudam com deploys — cache curto + revalidação.
+[[headers]]
+  for = "/css/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/js/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# Cabeçalhos de segurança básicos em toda a app.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(self)"
+    X-Frame-Options = "SAMEORIGIN"
+
+# -----------------------------------------------------------------------------
+# Redirects
+# -----------------------------------------------------------------------------
+
+# Fallback para páginas inexistentes → 404 personalizada
 [[redirects]]
   from = "/*"
   to = "/pages/404.html"

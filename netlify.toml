@@ -1,0 +1,21 @@
+# Configuração do deploy do FRONTEND no Netlify.
+# O backend Node/Express NÃO roda no Netlify — precisa estar hospedado
+# separadamente (Render, Railway, Fly.io, etc).
+#
+# 1) Suba o /backend em um dos serviços acima.
+# 2) Anote a URL pública (ex.: https://ecocampus.onrender.com).
+# 3) Nos <head> dos HTML, adicione:
+#       <meta name="ecocampus-api" content="https://ecocampus.onrender.com/api">
+#    OU defina via variável antes de importar api.js:
+#       <script>window.__ECOCAMPUS_API__ = "https://ecocampus.onrender.com/api";</script>
+# 4) Faça o deploy do frontend no Netlify (arrastar pasta ou GitHub).
+
+[build]
+  publish = "."
+  # Não há build step (HTML/CSS/JS puros)
+
+# SPA fallback (opcional): páginas inexistentes vão para a 404 personalizada
+[[redirects]]
+  from = "/*"
+  to = "/pages/404.html"
+  status = 404

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#15296f">
+  <title>Entrar — EcoCampus</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
+  <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js" defer></script>
+
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/pages.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+</head>
+
+<body class="auth-page">
+  <div class="auth-wrap">
+    <div class="auth-brand">
+      <a href="/" class="brand" aria-label="Voltar para landing">
+        <span class="brand__dot"></span>
+        ECOCAMPUS
+      </a>
+    </div>
+
+    <div class="auth-card">
+      <h1>Bem-vindo de volta</h1>
+      <p class="lead">Entre para gerenciar seus anúncios, favoritos e conectar-se com o campus.</p>
+
+      <form id="login-form" novalidate>
+        <div class="form-field" data-field="email">
+          <label class="form-label" for="email">E-mail acadêmico</label>
+          <input class="form-input" id="email" name="email" type="email" autocomplete="email" required placeholder="voce@universidade.edu">
+          <span class="form-error" data-error>Informe um e-mail válido.</span>
+        </div>
+
+        <div class="form-field" data-field="password">
+          <label class="form-label" for="password">Senha</label>
+          <input class="form-input" id="password" name="password" type="password" autocomplete="current-password" required placeholder="Mínimo 6 caracteres">
+          <span class="form-error" data-error>Senha muito curta.</span>
+        </div>
+
+        <label class="checkbox" style="margin-bottom:1.3rem">
+          <input type="checkbox" checked id="remember"> Manter-me conectado
+        </label>
+
+        <button class="btn-primary btn-block" type="submit" id="submit-btn">
+          <span data-label>Entrar</span>
+          <iconify-icon icon="lucide:arrow-right" data-icon></iconify-icon>
+        </button>
+
+        <p class="auth-alt">
+          Ainda não tem conta? <a href="/pages/cadastro.html">Cadastre-se agora</a>
+        </p>
+        <p class="auth-alt" style="margin-top:.4rem;font-size:12px;opacity:.75">
+          Login de teste: <strong>demo@ecocampus.edu</strong> / <strong>demo1234</strong>
+        </p>
+      </form>
+    </div>
+  </div>
+
+  <script type="module" src="/js/pages/auth.js"></script>
+</body>
+</html>

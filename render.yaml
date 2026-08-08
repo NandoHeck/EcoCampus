@@ -1,0 +1,25 @@
+# Render Blueprint — https://render.com/docs/infrastructure-as-code
+# Descreve o serviço do backend do EcoCampus.
+# No painel do Render: "New" → "Blueprint" → aponta pra este repositório.
+
+services:
+  - type: web
+    name: ecocampus-api
+    runtime: node
+    plan: free
+    region: oregon
+    branch: main
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: node server.js
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: NODE_ENV
+        value: production
+      - key: CORS_ORIGIN
+        value: "*"
+      - key: PASSWORD_SALT
+        generateValue: true

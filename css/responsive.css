@@ -1,0 +1,74 @@
+/* =============================================================================
+   ECOCAMPUS — responsive.css
+   Mobile-first. Breakpoints: 480 / 720 / 960 / 1200.
+============================================================================= */
+
+/* Escondido por padrão para <= 900px: dá espaço à bottom nav */
+@media (max-width:900px){
+  .nav-links{display:none}
+  .nav-actions .btn-primary{padding:.65rem 1.1rem;font-size:13px}
+  .bottom-nav{display:block}
+  body.has-bottom-nav{padding-bottom:calc(var(--bottom-nav-h) + env(safe-area-inset-bottom))}
+}
+@media (max-width:900px){
+  .nav-toggle{display:inline-flex}
+}
+@media (min-width:901px){
+  .nav-toggle{display:none}
+}
+
+/* Landing hero — bottom entrance da retícula em mobile */
+@media (max-width:720px){
+  .sonar{top:120px;width:200px;height:200px}
+  .hero-social{gap:1.2rem}
+  .hero-social__num{font-size:18px}
+  .footer__grid{grid-template-columns:1fr 1fr;gap:1.5rem}
+  .footer__col:first-child{grid-column:1/-1}
+}
+
+@media (max-width:520px){
+  :root{--doc-nav-h:58px}
+  .brand{font-size:16px}
+  .brand__sub{display:none}
+  .hero-cta{flex-direction:column;align-items:stretch}
+  .hero-cta .btn-primary,.hero-cta .btn-ghost{width:100%;justify-content:center}
+  .footer__grid{grid-template-columns:1fr}
+  .form-row{grid-template-columns:1fr}
+  .stats-grid{grid-template-columns:1fr 1fr}
+  .stat-card__value{font-size:26px}
+  .type-toggle{grid-template-columns:1fr}
+  .listing-filters{grid-template-columns:1fr}
+  .detail-grid{grid-template-columns:1fr}
+  .profile-head{padding:1.4rem 1.2rem;text-align:center;justify-content:center}
+  .profile-head__actions{margin-left:0;justify-content:center;width:100%}
+  .modal__body{padding:1.4rem}
+}
+
+@media (max-width:400px){
+  .ad-grid{grid-template-columns:1fr}
+}
+
+/* Tablet ajustes */
+@media (min-width:720px) and (max-width:1024px){
+  .detail-grid{grid-template-columns:1fr 1fr}
+  .ad-grid{grid-template-columns:repeat(3,1fr)}
+}
+
+/* Reduce motion */
+@media (prefers-reduced-motion:reduce){
+  *,
+  *::before,
+  *::after{
+    animation-duration:.001ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.001ms !important;
+    scroll-behavior:auto !important;
+  }
+  .sonar span{display:none}
+}
+
+/* Print (fallback simples) */
+@media print{
+  .navbar,.bottom-nav,.footer,.hero-cta,.detail-actions{display:none !important}
+  body{background:white;color:#000}
+}

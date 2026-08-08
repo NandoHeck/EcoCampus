@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#15296f">
+  <title>Editar anúncio — EcoCampus</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
+  <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js" defer></script>
+
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/pages.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+</head>
+
+<body class="page-bg">
+  <div id="app-navbar"></div>
+
+  <main class="form-page">
+    <div class="shell">
+      <a class="detail-back" href="/pages/perfil.html">
+        <iconify-icon icon="lucide:arrow-left"></iconify-icon> Voltar
+      </a>
+
+      <div class="form-container animate-on-scroll">
+        <h1>Editar anúncio</h1>
+        <p class="lead">Atualize as informações do seu item.</p>
+
+        <div id="form-mount">
+          <div class="center-loader"><span class="spinner"></span></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="app-bottom-nav"></div>
+
+  <script type="module" src="/js/pages/editar-anuncio.js"></script>
+</body>
+</html>

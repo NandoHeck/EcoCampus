@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#15296f">
+  <title>Publicar anúncio — EcoCampus</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
+  <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js" defer></script>
+
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/pages.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+</head>
+
+<body class="page-bg">
+  <div id="app-navbar"></div>
+
+  <main class="form-page">
+    <div class="shell">
+      <a class="detail-back" href="/pages/dashboard.html">
+        <iconify-icon icon="lucide:arrow-left"></iconify-icon> Voltar
+      </a>
+
+      <div class="form-container animate-on-scroll">
+        <h1>Publicar anúncio</h1>
+        <p class="lead">Preencha os campos abaixo. Bons anúncios têm fotos claras e descrições honestas.</p>
+
+        <form id="ad-form" novalidate>
+          <div class="form-field">
+            <label class="form-label">Tipo de anúncio</label>
+            <div class="type-toggle">
+              <input type="radio" name="type" value="sale" id="type-sale" checked>
+              <label for="type-sale"><iconify-icon icon="lucide:tag"></iconify-icon> Venda</label>
+              <input type="radio" name="type" value="donation" id="type-donation">
+              <label for="type-donation"><iconify-icon icon="lucide:heart-handshake"></iconify-icon> Doação</label>
+            </div>
+          </div>
+
+          <div class="form-field" data-field="title">
+            <label class="form-label" for="title">Título</label>
+            <input class="form-input" id="title" name="title" type="text" required maxlength="120" placeholder="Ex.: Cálculo 1 — Stewart em ótimo estado">
+            <span class="form-hint">Até 120 caracteres.</span>
+            <span class="form-error" data-error>Título deve ter entre 3 e 120 caracteres.</span>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field" data-field="category">
+              <label class="form-label" for="category">Categoria</label>
+              <select class="form-select" id="category" name="category" required>
+                <option value="">Selecione…</option>
+                <option>Livros</option>
+                <option>Apostilas</option>
+                <option>Xerox</option>
+                <option>Calculadoras</option>
+                <option>Componentes Eletrônicos</option>
+                <option>Jalecos</option>
+                <option>Equipamentos</option>
+                <option>Móveis</option>
+                <option>Escritório</option>
+                <option>Outros</option>
+              </select>
+              <span class="form-error" data-error>Escolha uma categoria.</span>
+            </div>
+            <div class="form-field" data-field="price" id="price-field">
+              <label class="form-label" for="price">Preço (R$)</label>
+              <input class="form-input" id="price" name="price" type="number" min="0" step="0.01" placeholder="0,00">
+              <span class="form-hint">Deixe 0 se for doação.</span>
+              <span class="form-error" data-error>Informe um preço válido.</span>
+            </div>
+          </div>
+
+          <div class="form-field" data-field="imageUrl">
+            <label class="form-label" for="imageUrl">URL da imagem</label>
+            <input class="form-input" id="imageUrl" name="imageUrl" type="url" placeholder="https://... (opcional)">
+            <div class="image-preview" id="image-preview">
+              <span>Pré-visualização da imagem aparecerá aqui</span>
+            </div>
+            <span class="form-error" data-error>URL de imagem inválida.</span>
+          </div>
+
+          <div class="form-field" data-field="description">
+            <label class="form-label" for="description">Descrição</label>
+            <textarea class="form-textarea" id="description" name="description" required minlength="10" maxlength="2000" placeholder="Descreva o estado, marca, tempo de uso e detalhes relevantes..."></textarea>
+            <span class="form-hint"><span id="desc-count">0</span>/2000 caracteres</span>
+            <span class="form-error" data-error>Descrição precisa ter entre 10 e 2000 caracteres.</span>
+          </div>
+
+          <div class="form-actions">
+            <a class="btn-ghost" href="/pages/dashboard.html">Cancelar</a>
+            <button class="btn-primary" type="submit" id="submit-btn">
+              <span data-label>Publicar anúncio</span>
+              <iconify-icon icon="lucide:send" data-icon></iconify-icon>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <div id="app-bottom-nav"></div>
+
+  <script type="module" src="/js/pages/criar-anuncio.js"></script>
+</body>
+</html>

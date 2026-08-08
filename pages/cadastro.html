@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#15296f">
+  <title>Criar conta — EcoCampus</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
+  <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js" defer></script>
+
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/pages.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+</head>
+
+<body class="auth-page">
+  <div class="auth-wrap">
+    <div class="auth-brand">
+      <a href="/" class="brand"><span class="brand__dot"></span>ECOCAMPUS</a>
+    </div>
+
+    <div class="auth-card">
+      <h1>Crie sua conta</h1>
+      <p class="lead">É grátis, leva 2 minutos e você já pode começar a circular.</p>
+
+      <form id="register-form" novalidate>
+        <div class="form-field" data-field="name">
+          <label class="form-label" for="name">Nome completo</label>
+          <input class="form-input" id="name" name="name" type="text" autocomplete="name" required placeholder="Como devemos te chamar?">
+          <span class="form-error" data-error>Informe seu nome (mínimo 2 caracteres).</span>
+        </div>
+
+        <div class="form-field" data-field="email">
+          <label class="form-label" for="email">E-mail acadêmico</label>
+          <input class="form-input" id="email" name="email" type="email" autocomplete="email" required placeholder="voce@universidade.edu">
+          <span class="form-error" data-error>Informe um e-mail válido.</span>
+        </div>
+
+        <div class="form-row">
+          <div class="form-field" data-field="university">
+            <label class="form-label" for="university">Universidade</label>
+            <input class="form-input" id="university" name="university" type="text" autocomplete="organization" placeholder="Ex.: USP">
+            <span class="form-error" data-error>Informe sua universidade.</span>
+          </div>
+          <div class="form-field" data-field="course">
+            <label class="form-label" for="course">Curso</label>
+            <input class="form-input" id="course" name="course" type="text" placeholder="Ex.: Engenharia Civil">
+            <span class="form-error" data-error>Informe seu curso.</span>
+          </div>
+        </div>
+
+        <div class="form-field" data-field="password">
+          <label class="form-label" for="password">Senha</label>
+          <input class="form-input" id="password" name="password" type="password" autocomplete="new-password" required placeholder="Mínimo 6 caracteres">
+          <span class="form-hint">Use pelo menos 6 caracteres.</span>
+          <span class="form-error" data-error>Senha muito curta (mínimo 6 caracteres).</span>
+        </div>
+
+        <button class="btn-primary btn-block" type="submit" id="submit-btn">
+          <span data-label>Criar minha conta</span>
+          <iconify-icon icon="lucide:arrow-right" data-icon></iconify-icon>
+        </button>
+
+        <p class="auth-alt">
+          Já tem conta? <a href="/pages/login.html">Entre agora</a>
+        </p>
+      </form>
+    </div>
+  </div>
+
+  <script type="module" src="/js/pages/auth.js"></script>
+</body>
+</html>

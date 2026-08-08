@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nexus — Design System</title>
+
+  <!-- Same fonts as the reference build -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+
+  <!-- Same stylesheet shipped by the reference (Tailwind build + keyframes: sonar, float, fade-in, shimmer, pulse-slow, fadeSlideIn...) -->
+  <link rel="stylesheet" href="refs/aura2/css/index-Krd_5lR0.css">
+
+  <!-- Same Iconify web component used by the reference -->
+  <script src="refs/aura2/js/iconify-icon.min.js" crossorigin="anonymous"></script>
+
+  <style>
+    /* ============================================================
+       Design tokens — extracted from the reference hero screenshot
+       (images/edventure-global-39.png). No values are invented:
+       every colour / size below is read off the original artwork.
+       ============================================================ */
+    :root{
+      --bg-deep:#15296f;          /* outer navy of the radial bg   */
+      --bg-royal:#1e3a8a;         /* tailwind blue-900, base plane */
+      --bg-glow:#3055d8;          /* lit centre of the radial bg   */
+      --accent:#facc15;           /* tailwind yellow-400, primary  */
+      --accent-hi:#fde047;        /* yellow-300, gradient highlight*/
+      --accent-deep:#15234f;      /* ink used on yellow surfaces   */
+      --ink:#ffffff;              /* headings                      */
+      --muted:#aab6da;            /* body / hero sub-copy          */
+      --blue-100:#dbeafe;         /* nav links                     */
+      --glass-fill:rgba(255,255,255,.06);
+      --glass-fill-hi:rgba(255,255,255,.12);
+      --glass-line:rgba(255,255,255,.16);
+      --glass-line-hi:rgba(255,255,255,.30);
+      --hairline:rgba(255,255,255,.10);
+      --ease:cubic-bezier(.16,1,.3,1);   /* the reference's signature easing */
+      --shell:1200px;
+      --doc-nav-h:54px;
+    }
+
+    /* ---- Keyframes — copied verbatim from index-Krd_5lR0.css ---- */
+    @keyframes fadeSlideIn{0%{opacity:0;transform:translateY(30px);filter:blur(8px)}to{opacity:1;transform:translateY(0);filter:blur(0)}}
+    @keyframes sonar{0%{transform:scale(1);opacity:1}to{transform:scale(2);opacity:0}}
+    @keyframes float{0%,to{transform:translateY(0)}50%{transform:translateY(-10px)}}
+    @keyframes fade-in{0%{opacity:0}to{opacity:1}}
+    @keyframes pulse-slow{0%,to{opacity:1}50%{opacity:.8}}
+    @keyframes shimmer{0%{transform:translateX(-100%)}to{transform:translateX(100%)}}
+    @keyframes gradient{0%{background-position:0% center}to{background-position:200% center}}
+
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{
+      font-family:Inter,system-ui,sans-serif;
+      color:var(--ink);
+      background:var(--bg-deep);
+      -webkit-font-smoothing:antialiased;
+      overflow-x:hidden;
+    }
+    a{color:inherit;text-decoration:none}
+    ::selection{background:var(--accent);color:var(--accent-deep)}
+
+    /* ============================================================
+       Fixed documentation nav (Rule 6 — horizontal anchored nav)
+       ============================================================ */
+    .doc-nav{
+      position:fixed;top:0;left:0;right:0;z-index:90;
+      height:var(--doc-nav-h);
+      display:flex;align-items:center;gap:1.5rem;
+      padding:0 clamp(1rem,4vw,2.5rem);
+      background:rgba(13,24,68,.82);
+      backdrop-filter:blur(14px);
+      border-bottom:1px solid var(--hairline);
+    }
+    .doc-nav__brand{
+      font-weight:700;font-size:14px;letter-spacing:.16em;
+      white-space:nowrap;display:flex;align-items:center;gap:.4rem;
+    }
+    .doc-nav__brand i{width:6px;height:6px;border-radius:50%;background:var(--accent);display:inline-block}
+    .doc-nav__brand span{color:var(--muted);font-weight:500;letter-spacing:.02em}
+    .doc-nav__links{
+      display:flex;gap:.35rem;margin-left:auto;
+      overflow-x:auto;scrollbar-width:none;
+    }
+    .doc-nav__links::-webkit-scrollbar{display:none}
+    .doc-nav__links a{
+      font-size:12.5px;font-weight:500;letter-spacing:.04em;
+      color:var(--muted);white-space:nowrap;
+      padding:.45rem .7rem;border-radius:999px;
+      transition:color .3s var(--ease),background .3s var(--ease);
+    }
+    .doc-nav__links a:hover{color:var(--ink);background:var(--glass-fill)}
+    .doc-nav__links a.is-active{color:var(--accent-deep);background:var(--accent)}
+
+    /* ============================================================
+       Generic section scaffolding (documentation chrome)
+       ============================================================ */
+    section{scroll-margin-top:var(--doc-nav-h)}
+    .shell{max-width:var(--shell);margin:0 auto;padding:0 clamp(1rem,4vw,2.5rem)}
+    .doc-section{padding:clamp(4rem,9vw,7.5rem) 0;border-top:1px solid var(--hairline)}
+    .doc-head{max-width:640px;margin-bottom:3.25rem}
+    .doc-kicker{
+      display:inline-flex;align-items:center;gap:.5rem;
+      font-size:12px;font-weight:600;letter-spacing:.22em;
+      text-transform:uppercase;color:var(--accent);margin-bottom:1rem;
+    }
+    .doc-kicker::before{content:"";width:22px;height:1px;background:var(--accent)}
+    .doc-title{font-size:clamp(28px,4vw,40px);font-weight:700;line-height:1.12;letter-spacing:-.02em}
+    .doc-desc{margin-top:.9rem;color:var(--muted);font-size:16px;line-height:1.65}
+
+    /* ============================================================
+       SECTION 0 — HERO (faithful clone of the reference hero)
+       ============================================================ */
+    .hero{
+      position:relative;isolation:isolate;overflow:hidden;
+      padding-top:var(--doc-nav-h);
+      background:
+        radial-gradient(ellipse 78% 62% at 50% 30%,
+          var(--bg-glow) 0%, #2746b9 38%, var(--bg-royal) 66%, var(--bg-deep) 100%);
+    }
+    /* noise texture — same asset shipped with the reference */
+    .hero::after{
+      content:"";position:absolute;inset:0;z-index:-1;
+      background-image:url(refs/aura2/images/noise.svg);
+      opacity:.5;mix-blend-mode:overlay;pointer-events:none;
+    }
+
+    /* --- hero top bar (the "NEXUS" navigation) --- */
+    .hero-nav{
+      display:flex;align-items:center;
+      padding:1.6rem clamp(1rem,4vw,2.5rem);
+      max-width:var(--shell);margin:0 auto;
+    }
+    .brand{font-size:19px;font-weight:700;letter-spacing:.14em;display:flex;align-items:center;gap:.45rem}
+    .brand b{width:6px;height:6px;border-radius:50%;background:var(--accent);display:inline-block;margin-top:6px}
+    .hero-nav__links{display:flex;gap:2.2rem;margin:0 auto}
+    .hero-nav__links a{font-size:14px;font-weight:500;color:var(--blue-100);transition:color .3s var(--ease)}
+    .hero-nav__links a:hover{color:var(--ink)}
+    .hero-nav__actions{display:flex;align-items:center;gap:1.4rem}
+    .hero-nav__login{font-size:14px;font-weight:500;color:var(--blue-100);transition:color .3s var(--ease)}
+    .hero-nav__login:hover{color:var(--ink)}
+
+    /* --- hero centre content --- */
+    .hero-body{
+      position:relative;
+      max-width:var(--shell);margin:0 auto;
+      padding:clamp(2.5rem,6vw,4.5rem) clamp(1rem,4vw,2.5rem) 0;
+      text-align:center;
+    }
+    /* concentric sonar rings behind the heading (keyframe: sonar) */
+    .sonar{
+      position:absolute;top:165px;left:50%;
+      width:240px;height:240px;
+      transform:translate(-50%,-50%);
+      pointer-events:none;z-index:-1;
+    }
+    .sonar span{
+      position:absolute;inset:0;border-radius:50%;
+      border:1px solid rgba(255,255,255,.14);
+      animation:sonar 4s var(--ease) infinite;
+    }
+    .sonar span:nth-child(2){animation-delay:1s}
+    .sonar span:nth-child(3){animation-delay:2s}
+    .sonar span:nth-child(4){animation-delay:3s}
+
+    .badge{
+      display:inline-flex;align-items:center;gap:.55rem;
+      padding:.5rem 1rem;border-radius:999px;
+      background:var(--glass-fill);border:1px solid var(--glass-line);
+      backdrop-filter:blur(10px);
+      font-size:11.5px;font-weight:600;letter-spacing:.2em;
+      text-transform:uppercase;color:var(--blue-100);
+    }
+    .badge::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent)}
+
+    .hero-h1{
+      margin:1.6rem auto 0;max-width:13ch;
+      font-size:clamp(40px,6.4vw,64px);
+      font-weight:800;line-height:1.04;letter-spacing:-.03em;
+    }
+    .hero-h1 .accent{
+      color:var(--accent);
+      text-decoration:underline;
+      text-decoration-thickness:4px;
+      text-underline-offset:9px;
+      text-decoration-color:var(--accent);
+    }
+    .hero-sub{
+      margin:1.5rem auto 0;max-width:54ch;
+      color:var(--muted);font-size:clamp(15px,1.6vw,18px);line-height:1.62;
+    }
+    .hero-cta{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;margin-top:2.2rem}
+
+    /* hero entrance — staggered fadeSlideIn (reference keyframe + easing) */
+    .hero .anim{animation:fadeSlideIn .9s var(--ease) both}
+    .hero .anim[data-d="0"]{animation-delay:.12s}
+    .hero .anim[data-d="1"]{animation-delay:.25s}
+    .hero .anim[data-d="2"]{animation-delay:.38s}
+    .hero .anim[data-d="3"]{animation-delay:.51s}
+    .hero .anim[data-d="4"]{animation-delay:.64s}
+
+    /* --- dashboard mockup panel (glass placeholder) --- */
+    .hero-mockup{
+      position:relative;
+      max-width:980px;margin:clamp(2.5rem,6vw,4.5rem) auto 0;
+      padding:1.1rem;border-radius:18px 18px 0 0;
+      background:var(--glass-fill);
+      border:1px solid var(--glass-line);border-bottom:none;
+      backdrop-filter:blur(8px);
+    }
+    .mock-bar{display:flex;align-items:center;gap:.6rem;padding-bottom:1rem}
+    .mock-pill{width:74px;height:30px;border-radius:8px;background:rgba(255,255,255,.10)}
+    .mock-pill--sm{width:46px}
+    .mock-square{width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,.10);margin-left:auto}
+    .mock-body{display:grid;grid-template-columns:200px 1fr;gap:1rem}
+    .mock-side{display:flex;flex-direction:column;gap:.7rem;padding:1rem;border-radius:12px;background:rgba(255,255,255,.05)}
+    .mock-row{height:16px;border-radius:5px;background:rgba(255,255,255,.10)}
+    .mock-row:nth-child(2){width:80%}
+    .mock-row:nth-child(3){width:60%}
+    .mock-row:nth-child(4){width:72%}
+    .mock-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+    .mock-card{
+      height:130px;border-radius:12px;
+      background:linear-gradient(160deg,rgba(255,255,255,.13),rgba(255,255,255,.03));
+      border:1px solid var(--hairline);
+    }
+
+    /* ============================================================
+       Shared button components (Rule 2 — same states reused)
+       ============================================================ */
+    .btn-primary,.btn-ghost{
+      display:inline-flex;align-items:center;gap:.55rem;
+      font-family:inherit;font-size:15px;cursor:pointer;
+      padding:.85rem 1.65rem;border-radius:999px;
+      transition:transform .35s var(--ease),box-shadow .35s var(--ease),
+                 background .35s var(--ease),border-color .35s var(--ease);
+    }
+    .btn-primary{
+      background:linear-gradient(180deg,var(--accent-hi),var(--accent));
+      color:var(--accent-deep);font-weight:600;border:none;
+      box-shadow:0 10px 26px -10px rgba(250,204,21,.55);
+    }
+    .btn-primary:hover,.btn-primary.is-hover{
+      transform:translateY(-3px);
+      box-shadow:0 16px 36px -10px rgba(250,204,21,.7);
+    }
+    .btn-primary:active,.btn-primary.is-active{transform:translateY(-1px) scale(.98)}
+    .btn-primary:focus-visible,.btn-primary.is-focus{
+      outline:none;
+      box-shadow:0 0 0 3px rgba(250,204,21,.35),0 10px 26px -10px rgba(250,204,21,.55);
+    }
+    .btn-primary:disabled,.btn-primary.is-disabled{
+      opacity:.38;cursor:not-allowed;transform:none;box-shadow:none;
+    }
+    .btn-ghost{
+      background:var(--glass-fill);
+      border:1px solid var(--glass-line);
+      color:var(--ink);font-weight:500;
+      backdrop-filter:blur(10px);
+    }
+    .btn-ghost:hover,.btn-ghost.is-hover{
+      transform:translateY(-3px);
+      background:var(--glass-fill-hi);border-color:var(--glass-line-hi);
+    }
+    .btn-ghost:active,.btn-ghost.is-active{transform:translateY(-1px) scale(.98)}
+    .btn-ghost:focus-visible,.btn-ghost.is-focus{
+      outline:none;border-color:var(--glass-line-hi);
+      box-shadow:0 0 0 3px rgba(255,255,255,.14);
+    }
+    .btn-ghost:disabled,.btn-ghost.is-disabled{opacity:.38;cursor:not-allowed;transform:none}
+    .btn-ghost .play-dot{
+      display:inline-flex;align-items:center;justify-content:center;
+      width:22px;height:22px;border-radius:50%;
+      border:1px solid var(--glass-line-hi);
+    }
+    .btn-sm{padding:.55rem 1.15rem;font-size:13.5px}
+
+    /* ============================================================
+       SECTION 1 — Typography spec list
+       ============================================================ */
+    .type-row{
+      display:flex;align-items:baseline;gap:1.5rem;
+      padding:1.5rem 0;border-bottom:1px solid var(--hairline);
+    }
+    .type-row:first-child{border-top:1px solid var(--hairline)}
+    .type-name{
+      flex:0 0 116px;font-size:12px;font-weight:600;
+      letter-spacing:.06em;text-transform:uppercase;color:var(--muted);
+    }
+    .type-preview{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .type-meta{flex:0 0 130px;text-align:right;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+
+    .t-h1{font-size:60px;line-height:64px;font-weight:800;letter-spacing:-.03em}
+    .t-h2{font-size:40px;line-height:46px;font-weight:700;letter-spacing:-.02em}
+    .t-h3{font-size:28px;line-height:34px;font-weight:700;letter-spacing:-.015em}
+    .t-h4{font-size:20px;line-height:28px;font-weight:600}
+    .t-bold-l{font-size:18px;line-height:28px;font-weight:600}
+    .t-bold-m{font-size:16px;line-height:24px;font-weight:600}
+    .t-bold-s{font-size:14px;line-height:20px;font-weight:600}
+    .t-paragraph{font-size:18px;line-height:30px;font-weight:400;color:var(--muted)}
+    .t-reg-l{font-size:16px;line-height:26px;font-weight:400;color:var(--muted)}
+    .t-reg-m{font-size:14px;line-height:22px;font-weight:400;color:var(--muted)}
+    .t-reg-s{font-size:13px;line-height:20px;font-weight:400;color:var(--muted)}
+    .t-grad{
+      background:linear-gradient(100deg,var(--accent-hi),var(--accent),var(--accent-hi));
+      background-size:200% auto;
+      -webkit-background-clip:text;background-clip:text;color:transparent;
+      animation:gradient 5s linear infinite;
+    }
+
+    /* ============================================================
+       SECTION 2 — Colour & surface swatches
+       ============================================================ */
+    .swatch-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1.1rem}
+    .swatch{
+      border-radius:14px;overflow:hidden;
+      border:1px solid var(--hairline);background:var(--glass-fill);
+    }
+    .swatch__chip{height:104px}
+    .swatch__body{padding:.85rem 1rem 1rem}
+    .swatch__name{font-size:14px;font-weight:600}
+    .swatch__val{margin-top:.2rem;font-size:12px;color:var(--muted);font-family:ui-monospace,monospace}
+    .swatch__use{margin-top:.55rem;font-size:12px;line-height:1.5;color:var(--muted)}
+    /* chip fills */
+    .c-deep{background:var(--bg-deep)}
+    .c-royal{background:var(--bg-royal)}
+    .c-glow{background:var(--bg-glow)}
+    .c-accent{background:var(--accent)}
+    .c-accent-hi{background:var(--accent-hi)}
+    .c-ink{background:var(--ink)}
+    .c-muted{background:var(--muted)}
+    .c-blue100{background:var(--blue-100)}
+    .c-glass{background:var(--glass-fill);backdrop-filter:blur(6px);
+      background-image:linear-gradient(45deg,#ffffff14 25%,transparent 25%,transparent 75%,#ffffff14 75%),
+                       linear-gradient(45deg,#ffffff14 25%,transparent 25%,transparent 75%,#ffffff14 75%);
+      background-size:20px 20px;background-position:0 0,10px 10px}
+    .c-line{background:repeating-linear-gradient(90deg,var(--glass-line) 0 2px,transparent 2px 12px)}
+    .c-grad-bg{background:radial-gradient(ellipse 80% 90% at 50% 25%,var(--bg-glow),var(--bg-royal) 60%,var(--bg-deep))}
+    .c-grad-btn{background:linear-gradient(180deg,var(--accent-hi),var(--accent))}
+
+    /* ============================================================
+       SECTION 3 — Component states
+       ============================================================ */
+    .comp-block{margin-bottom:2.75rem}
+    .comp-label{font-size:13px;font-weight:600;letter-spacing:.04em;color:var(--blue-100);margin-bottom:1rem}
+    .state-row{display:flex;flex-wrap:wrap;gap:1.6rem;align-items:flex-start}
+    .state-cell{display:flex;flex-direction:column;align-items:center;gap:.65rem}
+    .state-tag{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+    .navlink-demo{font-size:14px;font-weight:500;color:var(--blue-100);transition:color .3s var(--ease)}
+    .navlink-demo:hover,.navlink-demo.is-hover{color:var(--ink)}
+    .navlink-demo.is-active{color:var(--accent)}
+    .card-demo{
+      width:230px;padding:1.4rem;border-radius:14px;
+      background:var(--glass-fill);border:1px solid var(--glass-line);
+      backdrop-filter:blur(10px);
+      transition:transform .4s var(--ease),border-color .4s var(--ease),background .4s var(--ease);
+    }
+    .card-demo:hover,.card-demo.is-hover{
+      transform:translateY(-6px);
+      border-color:var(--glass-line-hi);background:var(--glass-fill-hi);
+    }
+    .card-demo__ico{
+      width:40px;height:40px;border-radius:10px;
+      display:flex;align-items:center;justify-content:center;
+      background:rgba(250,204,21,.16);color:var(--accent);font-size:22px;
+    }
+    .card-demo h4{margin:.9rem 0 .35rem;font-size:16px;font-weight:600}
+    .card-demo p{font-size:13px;line-height:1.55;color:var(--muted)}
+
+    /* ============================================================
+       SECTION 4 — Layout patterns
+       ============================================================ */
+    .layout-spec{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1rem;margin-bottom:2.5rem}
+    .spec-card{padding:1.2rem 1.3rem;border-radius:12px;background:var(--glass-fill);border:1px solid var(--hairline)}
+    .spec-card dt{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+    .spec-card dd{margin-top:.4rem;font-size:20px;font-weight:600;font-variant-numeric:tabular-nums}
+    .pattern{margin-top:1.6rem}
+    .pattern__cap{font-size:13px;font-weight:600;color:var(--blue-100);margin-bottom:.7rem}
+    .pat-frame{
+      border:1px dashed var(--glass-line);border-radius:14px;
+      padding:1.4rem;background:rgba(255,255,255,.03);
+    }
+    .pat-hero{display:flex;flex-direction:column;align-items:center;gap:.7rem;text-align:center}
+    .pat-bar{height:14px;border-radius:5px;background:rgba(255,255,255,.12)}
+    .pat-hero .pat-bar:nth-child(1){width:120px}
+    .pat-hero .pat-bar:nth-child(2){width:280px;height:26px;background:rgba(255,255,255,.18)}
+    .pat-hero .pat-bar:nth-child(3){width:340px}
+    .pat-hero .pat-bar:nth-child(4){width:200px;height:34px;background:var(--accent);margin-top:.4rem}
+    .pat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+    .pat-tile{height:96px;border-radius:10px;background:linear-gradient(160deg,rgba(255,255,255,.13),rgba(255,255,255,.03));border:1px solid var(--hairline)}
+    .pat-split{display:grid;grid-template-columns:1fr 1fr;gap:1rem;align-items:center}
+    .pat-split .pat-col{display:flex;flex-direction:column;gap:.55rem}
+    .pat-block{height:130px;border-radius:10px;background:rgba(255,255,255,.07);border:1px solid var(--hairline)}
+
+    /* ============================================================
+       SECTION 5 — Motion gallery
+       ============================================================ */
+    .motion-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.1rem}
+    .motion-card{
+      padding:1.4rem;border-radius:14px;
+      background:var(--glass-fill);border:1px solid var(--hairline);
+      display:flex;flex-direction:column;gap:1rem;
+    }
+    .motion-stage{
+      height:120px;border-radius:10px;background:rgba(0,0,0,.22);
+      display:flex;align-items:center;justify-content:center;
+      position:relative;overflow:hidden;
+    }
+    .motion-name{font-size:14px;font-weight:600}
+    .motion-meta{font-size:12px;color:var(--muted);font-family:ui-monospace,monospace;line-height:1.5}
+    .m-dot{width:46px;height:46px;border-radius:12px;background:linear-gradient(160deg,var(--accent-hi),var(--accent))}
+    .m-float{animation:float 6s ease-in-out infinite}
+    .m-pulse{animation:pulse-slow 4s infinite ease-in-out}
+    .m-fadeslide{animation:fadeSlideIn 1.6s var(--ease) infinite alternate}
+    .m-fadein{animation:fade-in 2s ease-out infinite alternate}
+    .m-sonar{position:relative;width:46px;height:46px}
+    .m-sonar span{position:absolute;inset:0;border-radius:50%;border:1px solid var(--accent);animation:sonar 2.4s var(--ease) infinite}
+    .m-sonar span:nth-child(2){animation-delay:.8s}
+    .m-sonar span:nth-child(3){animation-delay:1.6s}
+    .m-sonar i{position:absolute;inset:14px;border-radius:50%;background:var(--accent)}
+    .m-shimmer{
+      width:140px;height:30px;border-radius:8px;
+      background:rgba(255,255,255,.08);position:relative;overflow:hidden;
+    }
+    .m-shimmer::after{
+      content:"";position:absolute;inset:0;
+      background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);
+      animation:shimmer 1.8s infinite;
+    }
+
+    /* scroll reveal — mirrors the reference .animate-on-scroll behaviour */
+    .animate-on-scroll{
+      opacity:0;transform:translateY(30px);
+      transition:opacity .8s var(--ease),transform .8s var(--ease);
+    }
+    .animate-on-scroll.is-visible{opacity:1;transform:translateY(0)}
+
+    /* ============================================================
+       SECTION 6 — Icons
+       ============================================================ */
+    .icon-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:1rem}
+    .icon-cell{
+      display:flex;flex-direction:column;align-items:center;gap:.65rem;
+      padding:1.3rem;border-radius:12px;
+      background:var(--glass-fill);border:1px solid var(--hairline);
+    }
+    .icon-cell iconify-icon{color:var(--blue-100)}
+    .icon-cell span{font-size:11px;color:var(--muted);font-family:ui-monospace,monospace}
+    .icon-sizes{display:flex;align-items:flex-end;gap:1.6rem;flex-wrap:wrap}
+    .icon-size{display:flex;flex-direction:column;align-items:center;gap:.5rem;color:var(--ink)}
+    .icon-size span{font-size:11px;color:var(--muted);font-family:ui-monospace,monospace}
+    .icon-s16{font-size:16px}.icon-s20{font-size:20px}.icon-s24{font-size:24px}
+    .icon-s32{font-size:32px}.icon-s44{font-size:44px}
+    .icon-inherit{display:flex;gap:1.6rem;flex-wrap:wrap;margin-top:1.6rem}
+    .ic-yellow{color:var(--accent)}.ic-white{color:var(--ink)}.ic-muted{color:var(--muted)}.ic-blue{color:var(--blue-100)}
+
+    .doc-foot{
+      padding:3rem 0;border-top:1px solid var(--hairline);
+      text-align:center;font-size:13px;color:var(--muted);line-height:1.7;
+    }
+
+    @media(max-width:720px){
+      .hero-nav__links{display:none}
+      .mock-body{grid-template-columns:1fr}
+      .pat-split{grid-template-columns:1fr}
+      .type-row{flex-wrap:wrap;gap:.5rem}
+      .type-meta{flex-basis:100%;text-align:left}
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ========================= DOC NAV (Rule 6) ========================= -->
+  <nav class="doc-nav">
+    <div class="doc-nav__brand">NEXUS<i></i><span>Design System</span></div>
+    <div class="doc-nav__links">
+      <a href="#hero">00 — Hero</a>
+      <a href="#tipografia">01 — Tipografia</a>
+      <a href="#cores">02 — Cores</a>
+      <a href="#componentes">03 — Componentes</a>
+      <a href="#layout">04 — Layout</a>
+      <a href="#motion">05 — Motion</a>
+      <a href="#icones">06 — Ícones</a>
+    </div>
+  </nav>
+
+  <!-- ===================== SECTION 0 — HERO CLONE ====================== -->
+  <section id="hero" class="hero">
+    <header class="hero-nav">
+      <div class="brand">NEXUS<b></b></div>
+      <div class="hero-nav__links">
+        <a href="#tipografia">Foundations</a>
+        <a href="#componentes">Components</a>
+        <a href="#motion">Motion</a>
+      </div>
+      <div class="hero-nav__actions">
+        <a href="#tipografia" class="hero-nav__login">Log in</a>
+        <button class="btn-primary btn-sm">Get Started</button>
+      </div>
+    </header>
+
+    <div class="hero-body">
+      <div class="sonar" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+
+      <span class="badge anim" data-d="0">Design System · v1.0</span>
+
+      <h1 class="hero-h1 anim" data-d="1">
+        A living library for
+        <span class="accent">the Nexus interface</span>
+      </h1>
+
+      <p class="hero-sub anim" data-d="2">
+        Every token, component, motion curve and layout pattern — documented
+        with live, navigable examples pulled straight from the source design.
+      </p>
+
+      <div class="hero-cta anim" data-d="3">
+        <button class="btn-primary">
+          Explore Components
+          <iconify-icon icon="lucide:arrow-right"></iconify-icon>
+        </button>
+        <button class="btn-ghost">
+          <span class="play-dot"><iconify-icon icon="lucide:play"></iconify-icon></span>
+          View Foundations
+        </button>
+      </div>
+
+      <div class="hero-mockup anim" data-d="4" aria-hidden="true">
+        <div class="mock-bar">
+          <span class="mock-pill"></span>
+          <span class="mock-pill mock-pill--sm"></span>
+          <span class="mock-square"></span>
+        </div>
+        <div class="mock-body">
+          <aside class="mock-side">
+            <span class="mock-row"></span><span class="mock-row"></span>
+            <span class="mock-row"></span><span class="mock-row"></span>
+          </aside>
+          <div class="mock-grid">
+            <div class="mock-card"></div><div class="mock-card"></div>
+            <div class="mock-card"></div><div class="mock-card"></div>
+            <div class="mock-card"></div><div class="mock-card"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SECTION 1 — TYPOGRAPHY ======================= -->
+  <section id="tipografia" class="doc-section">
+    <div class="shell">
+      <div class="doc-head animate-on-scroll">
+        <span class="doc-kicker">01 — Tipografia</span>
+        <h2 class="doc-title">Escala, hierarquia e ritmo</h2>
+        <p class="doc-desc">
+          Família única <strong>Inter</strong> em toda a interface. A hierarquia
+          é conduzida por peso e tamanho — do display do hero ao texto de apoio.
+        </p>
+      </div>
+
+      <div class="type-list animate-on-scroll">
+        <div class="type-row">
+          <div class="type-name">Heading 1</div>
+          <div class="type-preview"><span class="t-h1">Scale your vision</span></div>
+          <div class="type-meta">60px / 64px · 800</div>
+        </div>
+        <div class="type-row">
+          <div class="type-name">Heading 2</div>
+          <div class="type-preview"><span class="t-h2">Escala, hierarquia e ritmo</span></div>
+          <div class="type-meta">40px / 46px · 700</div>
+        </div>
+        <div class="type-row">
+          <div class="type-name">Heading 3</div>
+          <div class="type-preview"><span class="t-h3">Componentes e estados</span></div>
+          <div class="type-meta">28px / 34px · 700</div>
+        </div>
+        <div class="type-row">
+          <div class="type-name">Heading 4</div>
+          <div class="type-preview"><span class="t-h4">Padrões de layout reais</span></div>
+          <div class="type-meta">20px / 28px · 600</div>
+        </div>
+        <div class="type-row">
+          <div class="type-name">Accent / Gradient</div>
+          <div class="type-preview"><span class="t-h3 t-grad">unmatched precision</span></div>
+          <div class="type-meta">28px / 34px · 700</div>
+        </div>
+        <div class="type-row">
+          <div class="type-name">Bold L</div>
+          <div class="type-preview"><span class="t-bold-l">Texto de destaque maior</span></div>
+          <div class="type-meta">18px / 28px · 600</div>
+        </div>
+        <div class="type-row">
+          <div class="type-name">Bold M</div>
+          <div class="type-preview"><span class="t-bold-m">Texto de destaque médio</span></div>
+          <div class="type-meta">16px / 24px · 600</div>
+        </div>
+        <div class="type-row">
+          <div class="type-name">Bold S</div>
+          <div class="type-preview"><span class="t-bold-s">Texto de destaque pequeno</span></div>
+          <div class="type-meta">14px / 20px · 600</div>
+        </div>
+        <div class="type-row">
+          <div class="type-name">Paragraph</div>
+          <div class="type-preview"><span class="t-paragraph">Parágrafo do hero — copy de apoio em corpo maior.</span></div>
+          <div class="type-meta">18px / 30px · 400</div>
+        </div>
+        <div class="type-row">
+          <div class="type-name">Regular L</div>
+          <div class="type-preview"><span class="t-reg-l">Texto corrido em tamanho grande</span></div>
+          <div class="type-meta">16px / 26px · 400</div>
+        </div>
+        <div class="type-row">
+          <div class="type-name">Regular M</div>
+          <div class="type-preview"><span class="t-reg-m">Texto corrido em tamanho médio</span></div>
+          <div class="type-meta">14px / 22px · 400</div>
+        </div>
+        <div class="type-row">
+          <div class="type-name">Regular S</div>
+          <div class="type-preview"><span class="t-reg-s">Legendas e metadados em tamanho pequeno</span></div>
+          <div class="type-meta">13px / 20px · 400</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SECTION 2 — COLOURS & SURFACES ================== -->
+  <section id="cores" class="doc-section">
+    <div class="shell">
+      <div class="doc-head animate-on-scroll">
+        <span class="doc-kicker">02 — Cores e Superfícies</span>
+        <h2 class="doc-title">Azul real, acento âmbar, vidro</h2>
+        <p class="doc-desc">
+          Uma base azul profunda com brilho radial central, um único acento
+          amarelo para ação, e superfícies de vidro translúcido para profundidade.
+        </p>
+      </div>
+
+      <div class="swatch-grid animate-on-scroll">
+        <div class="swatch">
+          <div class="swatch__chip c-glow"></div>
+          <div class="swatch__body">
+            <div class="swatch__name">Glow / Centre</div>
+            <div class="swatch__val">#3055D8</div>
+            <p class="swatch__use">Centro iluminado do gradiente radial do hero.</p>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch__chip c-royal"></div>
+          <div class="swatch__body">
+            <div class="swatch__name">Royal Blue</div>
+            <div class="swatch__val">#1E3A8A</div>
+            <p class="swatch__use">Plano base da página (Tailwind blue-900).</p>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch__chip c-deep"></div>
+          <div class="swatch__body">
+            <div class="swatch__name">Deep Navy</div>
+            <div class="swatch__val">#15296F</div>
+            <p class="swatch__use">Borda externa do gradiente; fundo de seção.</p>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch__chip c-accent"></div>
+          <div class="swatch__body">
+            <div class="swatch__name">Accent Yellow</div>
+            <div class="swatch__val">#FACC15</div>
+            <p class="swatch__use">Ação primária, sublinhado, pontos de destaque.</p>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch__chip c-accent-hi"></div>
+          <div class="swatch__body">
+            <div class="swatch__name">Accent High</div>
+            <div class="swatch__val">#FDE047</div>
+            <p class="swatch__use">Topo do gradiente dos botões amarelos.</p>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch__chip c-ink"></div>
+          <div class="swatch__body">
+            <div class="swatch__name">Ink / White</div>
+            <div class="swatch__val">#FFFFFF</div>
+            <p class="swatch__use">Títulos e texto de alto contraste.</p>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch__chip c-blue100"></div>
+          <div class="swatch__body">
+            <div class="swatch__name">Blue 100</div>
+            <div class="swatch__val">#DBEAFE</div>
+            <p class="swatch__use">Links de navegação e texto secundário claro.</p>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch__chip c-muted"></div>
+          <div class="swatch__body">
+            <div class="swatch__name">Muted</div>
+            <div class="swatch__val">#AAB6DA</div>
+            <p class="swatch__use">Corpo de texto e sub-copy do hero.</p>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch__chip c-glass"></div>
+          <div class="swatch__body">
+            <div class="swatch__name">Glass Surface</div>
+            <div class="swatch__val">rgba(255,255,255,.06)</div>
+            <p class="swatch__use">Cards, badge e botão secundário (backdrop-blur).</p>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch__chip c-line"></div>
+          <div class="swatch__body">
+            <div class="swatch__name">Hairline / Border</div>
+            <div class="swatch__val">rgba(255,255,255,.10–.16)</div>
+            <p class="swatch__use">Bordas de vidro, divisores e contornos de seção.</p>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch__chip c-grad-bg"></div>
+          <div class="swatch__body">
+            <div class="swatch__name">Gradient · Page</div>
+            <div class="swatch__val">radial-gradient ellipse</div>
+            <p class="swatch__use">Brilho radial do fundo: Glow → Royal → Deep.</p>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch__chip c-grad-btn"></div>
+          <div class="swatch__body">
+            <div class="swatch__name">Gradient · Button</div>
+            <div class="swatch__val">linear 180° · #FDE047→#FACC15</div>
+            <p class="swatch__use">Preenchimento do botão de ação primária.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================== SECTION 3 — UI COMPONENTS ====================== -->
+  <section id="componentes" class="doc-section">
+    <div class="shell">
+      <div class="doc-head animate-on-scroll">
+        <span class="doc-kicker">03 — Componentes de UI</span>
+        <h2 class="doc-title">Componentes e seus estados</h2>
+        <p class="doc-desc">
+          Cada componente presente no hero original, com seus estados lado a lado.
+          Sem inputs — eles não existem no design de referência.
+        </p>
+      </div>
+
+      <div class="comp-block animate-on-scroll">
+        <div class="comp-label">Botão primário — preenchimento amarelo</div>
+        <div class="state-row">
+          <div class="state-cell"><button class="btn-primary">Explore <iconify-icon icon="lucide:arrow-right"></iconify-icon></button><span class="state-tag">Default</span></div>
+          <div class="state-cell"><button class="btn-primary is-hover">Explore <iconify-icon icon="lucide:arrow-right"></iconify-icon></button><span class="state-tag">Hover</span></div>
+          <div class="state-cell"><button class="btn-primary is-active">Explore <iconify-icon icon="lucide:arrow-right"></iconify-icon></button><span class="state-tag">Active</span></div>
+          <div class="state-cell"><button class="btn-primary is-focus">Explore <iconify-icon icon="lucide:arrow-right"></iconify-icon></button><span class="state-tag">Focus</span></div>
+          <div class="state-cell"><button class="btn-primary is-disabled" disabled>Explore <iconify-icon icon="lucide:arrow-right"></iconify-icon></button><span class="state-tag">Disabled</span></div>
+        </div>
+      </div>
+
+      <div class="comp-block animate-on-scroll">
+        <div class="comp-label">Botão secundário — vidro translúcido</div>
+        <div class="state-row">
+          <div class="state-cell"><button class="btn-ghost"><span class="play-dot"><iconify-icon icon="lucide:play"></iconify-icon></span>Watch Demo</button><span class="state-tag">Default</span></div>
+          <div class="state-cell"><button class="btn-ghost is-hover"><span class="play-dot"><iconify-icon icon="lucide:play"></iconify-icon></span>Watch Demo</button><span class="state-tag">Hover</span></div>
+          <div class="state-cell"><button class="btn-ghost is-active"><span class="play-dot"><iconify-icon icon="lucide:play"></iconify-icon></span>Watch Demo</button><span class="state-tag">Active</span></div>
+          <div class="state-cell"><button class="btn-ghost is-focus"><span class="play-dot"><iconify-icon icon="lucide:play"></iconify-icon></span>Watch Demo</button><span class="state-tag">Focus</span></div>
+          <div class="state-cell"><button class="btn-ghost is-disabled" disabled><span class="play-dot"><iconify-icon icon="lucide:play"></iconify-icon></span>Watch Demo</button><span class="state-tag">Disabled</span></div>
+        </div>
+      </div>
+
+      <div class="comp-block animate-on-scroll">
+        <div class="comp-label">Badge de vidro — pílula com ponto de acento</div>
+        <div class="state-row">
+          <div class="state-cell"><span class="badge">Design System · v1.0</span><span class="state-tag">Default</span></div>
+        </div>
+      </div>
+
+      <div class="comp-block animate-on-scroll">
+        <div class="comp-label">Link de navegação</div>
+        <div class="state-row">
+          <div class="state-cell"><a class="navlink-demo">Features</a><span class="state-tag">Default</span></div>
+          <div class="state-cell"><a class="navlink-demo is-hover">Features</a><span class="state-tag">Hover</span></div>
+          <div class="state-cell"><a class="navlink-demo is-active">Features</a><span class="state-tag">Active</span></div>
+        </div>
+      </div>
+
+      <div class="comp-block animate-on-scroll">
+        <div class="comp-label">Card de vidro — hover lift</div>
+        <div class="state-row">
+          <div class="state-cell">
+            <div class="card-demo">
+              <div class="card-demo__ico"><iconify-icon icon="lucide:layout-grid"></iconify-icon></div>
+              <h4>Glass Card</h4>
+              <p>Superfície translúcida com backdrop-blur e borda hairline.</p>
+            </div>
+            <span class="state-tag">Default</span>
+          </div>
+          <div class="state-cell">
+            <div class="card-demo is-hover">
+              <div class="card-demo__ico"><iconify-icon icon="lucide:layout-grid"></iconify-icon></div>
+              <h4>Glass Card</h4>
+              <p>Superfície translúcida com backdrop-blur e borda hairline.</p>
+            </div>
+            <span class="state-tag">Hover</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SECTION 4 — LAYOUT & SPACING ==================== -->
+  <section id="layout" class="doc-section">
+    <div class="shell">
+      <div class="doc-head animate-on-scroll">
+        <span class="doc-kicker">04 — Layout e Espaçamento</span>
+        <h2 class="doc-title">Containers, grids e padrões</h2>
+        <p class="doc-desc">
+          O conteúdo vive num container centralizado com respiro generoso.
+          Abaixo, três padrões de layout extraídos do design original.
+        </p>
+      </div>
+
+      <dl class="layout-spec animate-on-scroll">
+        <div class="spec-card"><dt>Container (shell)</dt><dd>1200px</dd></div>
+        <div class="spec-card"><dt>Padding lateral</dt><dd>16 → 40px</dd></div>
+        <div class="spec-card"><dt>Padding de seção</dt><dd>64 → 120px</dd></div>
+        <div class="spec-card"><dt>Grid de cards</dt><dd>3 colunas</dd></div>
+        <div class="spec-card"><dt>Gap do grid</dt><dd>16px</dd></div>
+        <div class="spec-card"><dt>Raio — pílula</dt><dd>999px</dd></div>
+      </dl>
+
+      <div class="pattern animate-on-scroll">
+        <div class="pattern__cap">Padrão A — Hero centralizado em pilha</div>
+        <div class="pat-frame">
+          <div class="pat-hero">
+            <div class="pat-bar"></div>
+            <div class="pat-bar"></div>
+            <div class="pat-bar"></div>
+            <div class="pat-bar"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pattern animate-on-scroll">
+        <div class="pattern__cap">Padrão B — Grid de cards 3 colunas</div>
+        <div class="pat-frame">
+          <div class="pat-grid">
+            <div class="pat-tile"></div><div class="pat-tile"></div><div class="pat-tile"></div>
+            <div class="pat-tile"></div><div class="pat-tile"></div><div class="pat-tile"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pattern animate-on-scroll">
+        <div class="pattern__cap">Padrão C — Painel dividido (sidebar + conteúdo)</div>
+        <div class="pat-frame">
+          <div class="pat-split">
+            <div class="pat-col">
+              <div class="pat-bar"></div>
+              <div class="pat-bar"></div>
+              <div class="pat-bar"></div>
+            </div>
+            <div class="pat-block"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SECTION 5 — MOTION & INTERACTION ================ -->
+  <section id="motion" class="doc-section">
+    <div class="shell">
+      <div class="doc-head animate-on-scroll">
+        <span class="doc-kicker">05 — Motion e Interação</span>
+        <h2 class="doc-title">Galeria de movimento</h2>
+        <p class="doc-desc">
+          Animações e easings reaproveitados do build de referência. Todas as
+          seções desta página entram com <code>fadeSlideIn</code> no scroll,
+          usando o easing <code>cubic-bezier(.16,1,.3,1)</code>.
+        </p>
+      </div>
+
+      <div class="motion-grid animate-on-scroll">
+        <div class="motion-card">
+          <div class="motion-stage"><div class="m-dot m-fadeslide"></div></div>
+          <div class="motion-name">Entrada — fadeSlideIn</div>
+          <div class="motion-meta">translateY(30px)+blur(8px)<br>.8s cubic-bezier(.16,1,.3,1)</div>
+        </div>
+        <div class="motion-card">
+          <div class="motion-stage"><div class="m-dot m-float"></div></div>
+          <div class="motion-name">Flutuação — float</div>
+          <div class="motion-meta">translateY(-10px)<br>6s ease-in-out infinite</div>
+        </div>
+        <div class="motion-card">
+          <div class="motion-stage"><div class="m-sonar"><span></span><span></span><span></span><i></i></div></div>
+          <div class="motion-name">Ondas — sonar</div>
+          <div class="motion-meta">scale(1→2) opacity(1→0)<br>4s cubic-bezier(.16,1,.3,1)</div>
+        </div>
+        <div class="motion-card">
+          <div class="motion-stage"><div class="m-dot m-pulse"></div></div>
+          <div class="motion-name">Pulso — pulse-slow</div>
+          <div class="motion-meta">opacity(1↔.8)<br>4s ease-in-out infinite</div>
+        </div>
+        <div class="motion-card">
+          <div class="motion-stage"><div class="m-shimmer"></div></div>
+          <div class="motion-name">Brilho — shimmer</div>
+          <div class="motion-meta">translateX(-100%→100%)<br>1.8s linear infinite</div>
+        </div>
+        <div class="motion-card">
+          <div class="motion-stage"><button class="btn-primary btn-sm">Hover me</button></div>
+          <div class="motion-name">Hover — lift + glow</div>
+          <div class="motion-meta">translateY(-3px)<br>+ box-shadow glow .35s</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SECTION 6 — ICONS =========================== -->
+  <section id="icones" class="doc-section">
+    <div class="shell">
+      <div class="doc-head animate-on-scroll">
+        <span class="doc-kicker">06 — Ícones</span>
+        <h2 class="doc-title">Sistema de ícones</h2>
+        <p class="doc-desc">
+          O design usa o web component <code>&lt;iconify-icon&gt;</code> — a mesma
+          marcação do build original. Ícones herdam <code>currentColor</code> e
+          escalam com <code>font-size</code>.
+        </p>
+      </div>
+
+      <div class="icon-grid animate-on-scroll">
+        <div class="icon-cell"><iconify-icon icon="lucide:arrow-right" class="icon-s32"></iconify-icon><span>arrow-right</span></div>
+        <div class="icon-cell"><iconify-icon icon="lucide:play" class="icon-s32"></iconify-icon><span>play</span></div>
+        <div class="icon-cell"><iconify-icon icon="lucide:sparkles" class="icon-s32"></iconify-icon><span>sparkles</span></div>
+        <div class="icon-cell"><iconify-icon icon="lucide:layout-grid" class="icon-s32"></iconify-icon><span>layout-grid</span></div>
+        <div class="icon-cell"><iconify-icon icon="lucide:type" class="icon-s32"></iconify-icon><span>type</span></div>
+        <div class="icon-cell"><iconify-icon icon="lucide:palette" class="icon-s32"></iconify-icon><span>palette</span></div>
+      </div>
+
+      <div class="pattern animate-on-scroll">
+        <div class="pattern__cap">Variantes de tamanho</div>
+        <div class="icon-sizes">
+          <div class="icon-size"><iconify-icon icon="lucide:sparkles" class="icon-s16"></iconify-icon><span>16px</span></div>
+          <div class="icon-size"><iconify-icon icon="lucide:sparkles" class="icon-s20"></iconify-icon><span>20px</span></div>
+          <div class="icon-size"><iconify-icon icon="lucide:sparkles" class="icon-s24"></iconify-icon><span>24px</span></div>
+          <div class="icon-size"><iconify-icon icon="lucide:sparkles" class="icon-s32"></iconify-icon><span>32px</span></div>
+          <div class="icon-size"><iconify-icon icon="lucide:sparkles" class="icon-s44"></iconify-icon><span>44px</span></div>
+        </div>
+      </div>
+
+      <div class="pattern animate-on-scroll">
+        <div class="pattern__cap">Herança de cor — currentColor</div>
+        <div class="icon-inherit">
+          <iconify-icon icon="lucide:arrow-right" class="icon-s32 ic-yellow"></iconify-icon>
+          <iconify-icon icon="lucide:arrow-right" class="icon-s32 ic-white"></iconify-icon>
+          <iconify-icon icon="lucide:arrow-right" class="icon-s32 ic-blue"></iconify-icon>
+          <iconify-icon icon="lucide:arrow-right" class="icon-s32 ic-muted"></iconify-icon>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="doc-foot">
+    <div class="shell">
+      Nexus Design System — reconstruído a partir de <code>css/index-Krd_5lR0.css</code><br>
+      e do preview oficial <code>images/edventure-global-39.png</code>.
+    </div>
+  </footer>
+
+  <script>
+    /* Scroll reveal — mirrors the reference .animate-on-scroll behaviour */
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          e.target.classList.add('is-visible');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.animate-on-scroll').forEach(function(el){ io.observe(el); });
+
+    /* Doc-nav scroll spy */
+    var links = document.querySelectorAll('.doc-nav__links a');
+    var spy = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          links.forEach(function(l){
+            l.classList.toggle('is-active', l.getAttribute('href') === '#' + e.target.id);
+          });
+        }
+      });
+    }, { rootMargin: '-45% 0px -50% 0px' });
+    document.querySelectorAll('section[id]').forEach(function(s){ spy.observe(s); });
+  </script>
+
+</body>
+</html>

@@ -21,6 +21,34 @@ export function safeUrl(url) {
   return trimmed;
 }
 
+/**
+ * Renderiza um bloco de avatar consistente:
+ * - Se `avatar` for uma URL válida, mostra <img>.
+ * - Caso contrário, mostra um ícone de usuário (bonequinho, estilo Gmail/WhatsApp).
+ *
+ * @param {string|null|undefined} avatar - URL da imagem.
+ * @param {string} name - Nome do usuário (para alt/aria).
+ * @param {"sm"|"md"|"lg"|"xl"} size
+ * @param {string} extraClass
+ */
+export function avatarBlock(avatar, name = '', size = 'md', extraClass = '') {
+  const sizeClass = size === 'sm' ? '' : size === 'lg' ? 'avatar--lg' : size === 'xl' ? 'avatar--xl' : '';
+  const url = safeUrl(avatar);
+  if (url) {
+    return `
+      <div class="avatar ${sizeClass} ${extraClass}">
+        <img src="${escapeHtml(url)}" alt="${escapeHtml(name || 'Avatar')}"
+             onerror="this.remove(); this.parentElement.classList.add('avatar--empty'); this.parentElement.insertAdjacentHTML('beforeend', '<iconify-icon icon=&quot;lucide:user-round&quot;></iconify-icon>');">
+      </div>
+    `;
+  }
+  return `
+    <div class="avatar avatar--empty ${sizeClass} ${extraClass}" aria-label="${escapeHtml(name || 'Sem foto de perfil')}">
+      <iconify-icon icon="lucide:user-round"></iconify-icon>
+    </div>
+  `;
+}
+
 /* --------- Format helpers --------- */
 export function formatPrice(value, type) {
   if (type === 'donation' || Number(value) === 0) return 'Doação';

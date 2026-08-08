@@ -22,7 +22,7 @@
   <main class="profile">
     <div class="shell">
       <header class="profile-head animate-on-scroll" id="profile-head">
-        <div class="skeleton" style="width:88px;height:88px;border-radius:50%"></div>
+        <div class="avatar avatar--lg avatar--empty"><iconify-icon icon="lucide:user-round"></iconify-icon></div>
         <div class="profile-head__info">
           <div class="skeleton skeleton--title" style="width:180px"></div>
           <div class="skeleton skeleton--text" style="width:220px"></div>
@@ -51,7 +51,10 @@
 
       <section id="tab-editar" class="profile-panel hidden">
         <div class="form-container" style="margin:0">
-          <h2 style="font-size:20px;font-weight:700;margin-bottom:1.2rem">Dados do perfil</h2>
+          <h2 style="font-size:20px;font-weight:700;margin-bottom:1.4rem">Dados do perfil</h2>
+
+          <div id="avatar-editor" style="margin-bottom:1.8rem"></div>
+
           <form id="profile-form">
             <div class="form-field" data-field="name">
               <label class="form-label" for="p-name">Nome</label>
@@ -69,8 +72,9 @@
               </div>
             </div>
             <div class="form-field">
-              <label class="form-label" for="p-avatar">URL do avatar</label>
-              <input class="form-input" id="p-avatar" name="avatar" type="url" placeholder="https://...">
+              <label class="form-label" for="p-avatar">URL da foto de perfil</label>
+              <input class="form-input" id="p-avatar" name="avatar" type="url" placeholder="https://... (cole a URL de uma imagem)">
+              <span class="form-hint">Deixe em branco para usar o ícone padrão.</span>
             </div>
             <div class="form-actions">
               <button class="btn-primary" type="submit" id="p-submit">

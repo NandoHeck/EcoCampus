@@ -1,6 +1,6 @@
 import { bootstrapPage, Auth } from '../app.js';
 import api from '../api.js';
-import { renderAdCard, skeletonCards, emptyState, errorState, escapeHtml, toast, confirmDialog } from '../ui.js';
+import { renderAdCard, skeletonCards, emptyState, errorState, escapeHtml, toast, confirmDialog, avatarBlock, safeUrl } from '../ui.js';
 
 if (!Auth.requireAuth()) { /* redirect */ }
 
@@ -10,9 +10,7 @@ function renderHead() {
   const u = state.user;
   const mount = document.getElementById('profile-head');
   mount.innerHTML = `
-    <div class="avatar avatar--lg">
-      <img src="${escapeHtml(u.avatar || 'https://i.pravatar.cc/200?u=' + encodeURIComponent(u.email))}" alt="${escapeHtml(u.name)}">
-    </div>
+    ${avatarBlock(u.avatar, u.name, 'lg')}
     <div class="profile-head__info">
       <h1>${escapeHtml(u.name)}</h1>
       <p>
@@ -36,6 +34,74 @@ function renderHead() {
     if (!ok) return;
     Auth.logout();
     window.location.href = '/';
+  });
+}
+
+function renderAvatarEditor() {
+  const mount = document.getElementById('avatar-editor');
+  if (!mount) return;
+  const u = state.user;
+  mount.innerHTML = `
+    <div class="avatar-edit">
+      <div class="avatar-edit__stack" id="avatar-preview">
+        ${avatarBlock(u.avatar, u.name, 'xl')}
+      </div>
+      <div class="avatar-edit__actions">
+        <button type="button" class="btn-ghost btn-sm" data-avatar-choose>
+          <iconify-icon icon="lucide:image-plus"></iconify-icon>
+          ${u.avatar ? 'Trocar foto' : 'Adicionar foto'}
+        </button>
+        ${u.avatar ? `
+          <button type="button" class="btn-danger btn-sm" data-avatar-remove>
+            <iconify-icon icon="lucide:image-off"></iconify-icon> Remover
+          </button>` : ''}
+      </div>
+      <p class="avatar-edit__hint">Cole a URL de uma imagem pública (JPG/PNG/WebP). Sem foto, aparece o bonequinho padrão.</p>
+    </div>
+  `;
+
+  const chooseBtn = mount.querySelector('[data-avatar-choose]');
+  const removeBtn = mount.querySelector('[data-avatar-remove]');
+  const urlInput = document.getElementById('p-avatar');
+
+  chooseBtn.addEventListener('click', () => {
+    urlInput.focus();
+    urlInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  });
+
+  if (removeBtn) {
+    removeBtn.addEventListener('click', async () => {
+      const ok = await confirmDialog({
+        title: 'Remover foto de perfil?',
+        message: 'Sua foto será substituída pelo ícone padrão.',
+        confirmText: 'Remover',
+        destructive: true
+      });
+      if (!ok) return;
+      try {
+        const updated = await api.updateUser(state.user.id, { avatar: '' });
+        Auth.updateUser(updated);
+        state.user = updated;
+        urlInput.value = '';
+        renderHead();
+        renderAvatarEditor();
+        toast('Foto removida.', { type: 'success' });
+      } catch (err) {
+        toast(err.message || 'Erro ao remover.', { type: 'error' });
+      }
+    });
+  }
+}
+
+// Preview ao vivo enquanto o usuário digita a URL do avatar
+function bindAvatarLivePreview() {
+  const urlInput = document.getElementById('p-avatar');
+  if (!urlInput) return;
+  urlInput.addEventListener('input', () => {
+    const preview = document.getElementById('avatar-preview');
+    if (!preview) return;
+    const url = safeUrl(urlInput.value.trim());
+    preview.innerHTML = avatarBlock(url, state.user.name, 'xl');
   });
 }
 
@@ -127,6 +193,7 @@ function fillEditForm() {
       Auth.updateUser(updated);
       state.user = updated;
       renderHead();
+      renderAvatarEditor();
       toast('Perfil atualizado.', { type: 'success' });
     } catch (err) {
       toast(err.message || 'Erro ao salvar.', { type: 'error' });
@@ -160,7 +227,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   bootstrapPage();
   state.user = Auth.getUser();
   renderHead();
+  renderAvatarEditor();
   fillEditForm();
+  bindAvatarLivePreview();
   setupTabs();
   await loadFavs();
   await loadMyAds();

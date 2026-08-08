@@ -52,7 +52,8 @@ class UserController {
       const allowed = ['name', 'university', 'course', 'avatar'];
       const partial = {};
       allowed.forEach((k) => {
-        if (req.body[k] !== undefined) partial[k] = String(req.body[k]).slice(0, 200);
+        if (req.body[k] === undefined || req.body[k] === null) return;
+        partial[k] = String(req.body[k]).trim().slice(0, 500);
       });
       const updated = await this.userRepository.update(targetId, partial);
       if (!updated) throw new NotFoundError('Usuário não encontrado.');

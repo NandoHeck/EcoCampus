@@ -37,7 +37,7 @@ class RegisterUser {
       password: hashPassword(input.password),
       university: sanitizeString(input.university || '', 120),
       course: sanitizeString(input.course || '', 120),
-      avatar: `https://i.pravatar.cc/200?u=${encodeURIComponent(input.email)}`,
+      avatar: '', // sem foto por padrão — usuário define no perfil
       favorites: [],
       createdAt: new Date().toISOString()
     });

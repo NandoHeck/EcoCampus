@@ -640,11 +640,31 @@ section{scroll-margin-top:calc(var(--doc-nav-h) + 12px)}
 .avatar{
   width:36px;height:36px;border-radius:50%;
   background:var(--glass-fill);border:1px solid var(--glass-line);
-  overflow:hidden;flex-shrink:0;
+  overflow:hidden;flex-shrink:0;position:relative;
+  display:inline-flex;align-items:center;justify-content:center;
+  color:var(--muted);
 }
-.avatar img{width:100%;height:100%;object-fit:cover}
+.avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.avatar iconify-icon{
+  font-size:70%;
+  color:var(--muted);
+  opacity:.85;
+}
+.avatar--empty{
+  background:linear-gradient(160deg,rgba(255,255,255,.10),rgba(255,255,255,.02));
+}
 .avatar--lg{width:88px;height:88px}
+.avatar--lg iconify-icon{font-size:52px}
 .avatar--xl{width:140px;height:140px}
+.avatar--xl iconify-icon{font-size:80px}
+
+/* Avatar edit stack (perfil) */
+.avatar-edit{
+  display:flex;flex-direction:column;align-items:center;gap:.6rem;
+}
+.avatar-edit__stack{position:relative;display:inline-flex}
+.avatar-edit__actions{display:flex;gap:.4rem;flex-wrap:wrap;justify-content:center}
+.avatar-edit__hint{font-size:12px;color:var(--muted);text-align:center;max-width:32ch;line-height:1.5}
 
 /* Dropdown menu (perfil) */
 .menu{position:relative}

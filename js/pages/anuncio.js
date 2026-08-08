@@ -2,7 +2,7 @@ import { bootstrapPage, Auth } from '../app.js';
 import api, { ApiError } from '../api.js';
 import {
   renderAdCard, escapeHtml, safeUrl, formatPrice, formatDate,
-  toast, confirmDialog, errorState, skeletonCards, emptyState
+  toast, confirmDialog, errorState, skeletonCards, emptyState, avatarBlock
 } from '../ui.js';
 
 const params = new URLSearchParams(window.location.search);
@@ -34,6 +34,11 @@ async function load() {
       } catch {}
     }
     const isFav = favSet.has(ad.id);
+
+    // Busca o dono para exibir o avatar real (não gera random)
+    let owner = null;
+    try { owner = await api.getUser(ad.userId); } catch {}
+    const ownerAvatar = owner && owner.avatar ? owner.avatar : '';
 
     mount.innerHTML = `
       <div class="detail-grid">
@@ -75,12 +80,10 @@ async function load() {
           </div>
 
           <div class="detail-owner">
-            <div class="avatar avatar--lg" style="width:52px;height:52px">
-              <img src="https://i.pravatar.cc/120?u=${encodeURIComponent(ad.userId)}" alt="${escapeHtml(ad.advertiser)}">
-            </div>
+            ${avatarBlock(ownerAvatar, ad.advertiser, 'sm')}
             <div class="detail-owner__info">
               <strong>${escapeHtml(ad.advertiser || 'Estudante')}</strong>
-              <span>Anunciante</span>
+              <span>${escapeHtml(owner && owner.university ? owner.university : 'Anunciante')}</span>
             </div>
           </div>
 

@@ -4,7 +4,7 @@
  */
 
 import Auth from './auth.js';
-import { setupScrollReveal, setupRipple, progressiveImages, setupMenu, escapeHtml } from './ui.js';
+import { setupScrollReveal, setupRipple, progressiveImages, setupMenu, escapeHtml, avatarBlock } from './ui.js';
 
 const NAV_ITEMS = [
   { href: '/pages/dashboard.html', label: 'Descobrir', icon: 'lucide:compass' },
@@ -37,10 +37,8 @@ function renderNavbar(mount) {
   const authArea = logged
     ? `
       <div class="menu" data-menu>
-        <button class="btn-icon" data-menu-trigger aria-label="Menu do usuário" aria-haspopup="true">
-          <div class="avatar" style="width:32px;height:32px">
-            <img src="${escapeHtml(user.avatar || 'https://i.pravatar.cc/64?u=' + encodeURIComponent(user.email))}" alt="${escapeHtml(user.name)}">
-          </div>
+        <button class="btn-icon" data-menu-trigger aria-label="Menu do usuário" aria-haspopup="true" style="padding:2px">
+          ${avatarBlock(user.avatar, user.name, 'sm')}
         </button>
         <div class="menu__panel" role="menu">
           <a class="menu__item" href="/pages/perfil.html"><iconify-icon icon="lucide:user"></iconify-icon> Meu perfil</a>

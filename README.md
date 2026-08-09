@@ -11,13 +11,17 @@
 
 ## 🔗 Links
 
-- **Repositório**: https://github.com/NandoHeck/EcoCampus
-- **Frontend (produção)**: _a definir após deploy no Netlify_
-- **API (produção)**: _a definir após deploy no Render_
-- **Healthcheck**: `<URL_API>/api/health`
+- 🌐 **Frontend (produção)**: **https://ecocampu.netlify.app**
+- 🛠️ **API (produção)**: **https://ecocampus-api-9b6m.onrender.com/api**
+- ❤️ **Healthcheck**: https://ecocampus-api-9b6m.onrender.com/api/health
+- 📦 **Repositório**: https://github.com/NandoHeck/EcoCampus
 
-> Enquanto o deploy não estiver publicado, todas as instruções abaixo permitem
-> subir a plataforma completa localmente em menos de 1 minuto.
+> ℹ️ **Cold start**: o backend está no plano free do Render e "dorme" após 15min de
+> inatividade. A **primeira requisição** após o sono pode demorar ~30 segundos. Depois disso, fica rápido.
+>
+> ℹ️ **Persistência**: no plano free, o disco é efêmero. Anúncios criados durante os testes
+> podem ser reiniciados quando o serviço reinicia — o [seed](./backend/src/infrastructure/seed/seed.js)
+> repopula 3 usuários demo e 10 anúncios automaticamente.
 
 ---
 

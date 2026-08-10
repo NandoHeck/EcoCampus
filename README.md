@@ -504,9 +504,10 @@ EcoCampus/
 
 ### 🎯 Como usei IA neste projeto
 
-- **Arquitetura antes de código** — antes de qualquer implementação de peso, pedi auditorias técnicas que classificassem requisitos (obrigatório/bônus/implícito), listassem riscos e propusessem stacks alternativas.
-- **Scaffolding de estrutura** — geração do esqueleto Clean Architecture do backend (domain/application/infrastructure/presentation) a partir de um contrato definido por mim.
-- **UI a partir de Design System fixo** — o design system Nexus foi meu constraint principal. A IA foi instruída explicitamente a não inventar cores/tokens.
+- **Meta-engenharia de prompt** — antes de mandar o pedido principal pro Claude Code, usei o ChatGPT como "prompt engineer" pra refinar minhas ideias soltas em um prompt XML mandatório e bem estruturado. Só então gerei o projeto.
+- **Extração de Design System** — usei um prompt em `/frontend-design` pra transformar um site de referência em um `design-system.html` navegável, que virou o **constraint principal** de toda a UI. A IA foi instruída explicitamente a não inventar cores nem tokens.
+- **Arquitetura antes de código** — antes de implementações de peso (PWA, testes, SQLite), pedi auditorias técnicas que classificassem requisitos (obrigatório/bônus/implícito), listassem riscos e propusessem stacks alternativas.
+- **Scaffolding de estrutura** — geração do esqueleto Clean Architecture do backend (domain/application/infrastructure/presentation) a partir do contrato definido no prompt XML.
 - **Debug interativo** — situações reais como "HTTP 405 ao criar conta" foram diagnosticadas em conjunto com a IA, mas sempre com verificação manual da correção proposta.
 - **Documentação** — rascunho inicial do README foi gerado, mas revisado, editado e refinado manualmente antes do commit.
 
@@ -514,25 +515,108 @@ EcoCampus/
 
 ### 📝 Prompts complexos utilizados (exemplos reais)
 
-#### Prompt 1 — Especificação inicial completa do projeto
+#### Prompt 1 — Extração de Design System a partir de um site de referência
 
-**Contexto**: primeira interação do projeto. Precisava de um scaffold completo (backend + frontend + docs) que respeitasse 100% um Design System pré-existente. Estruturei o prompt com XML tags para forçar organização.
+**Contexto**: eu já tinha um site de referência (Aura) do qual queria herdar toda a linguagem visual — cores, tipografia, componentes, animações, layouts. Em vez de reinventar, pedi para a IA **documentar** o design system existente em um único arquivo autocontido, que serviria de constraint pra tudo que viesse depois. Usei a skill `/frontend-design` do Claude Code com um system prompt estruturado em XML.
+
+```xml
+/frontend-design
+<system>
+Você é um especialista em construção de Design Systems e Pattern Libraries.
+Sua função é analisar HTML, CSS e JS de referência e gerar um arquivo único que documenta
+todo o sistema de design utilizado, preservando fielmente o visual e comportamento originais.
+</system>
+
+<context>
+Você receberá o HTML, CSS e JS completos de um site de referência como entrada.
+A partir dele, deve criar um único arquivo chamado `design-system.html`,
+salvo na pasta @design_system.
+Este arquivo funciona como uma biblioteca viva de padrões: ele documenta e demonstra cada
+elemento visual do site original com exemplos reais e navegáveis.
+</context>
+
+<input>@design_system/refs/aura</input>
+
+<objective>
+Gerar um arquivo `@design-system.html` que preserve exatamente o visual e comportamento do
+design original, reutilizando o HTML, classes CSS, animações, keyframes, transições, efeitos
+e padrões de layout — sem aproximações ou recriações.
+</objective>
+
+<hard_rules>
+REGRAS INVIOLÁVEIS — siga todas sem exceção:
+1. NÃO redesenhe nem invente estilos novos.
+2. Reutilize exatamente os mesmos nomes de classes, animações, timings, easings e estados
+   (hover, focus, active, disabled).
+3. Referencie os mesmos arquivos CSS/JS usados pelo HTML original.
+4. Se um estilo ou componente NÃO existe no HTML de referência, NÃO o inclua.
+5. O arquivo deve ser autodocumentado pela sua própria estrutura (cada seção = documentação).
+6. Inclua uma navegação horizontal fixa no topo com âncoras para cada seção.
+7. NENHUM estilo inline. Tipografia, cores, espaçamentos e gradientes DEVEM vir do CSS original.
+</hard_rules>
+
+<sections>
+[Hero clonado exato · Tipografia (H1→Regular S) · Cores/superfícies · Componentes com
+todos os estados · Layout e espaçamento · Motion e interação · Ícones]
+</sections>
+```
+
+**Resultado**: o arquivo `design_system/design-system.html` (~1000 linhas, autocontido, navegável, com 7 seções). Ele virou o **contrato visual** de todo o projeto — passei a referenciar `@design_system/design-system.html` em todos os prompts subsequentes com a regra "não invente cores nem tokens".
+
+**Aprendizado**: forçar a IA a **documentar antes de aplicar** um design system é uma técnica muito mais robusta do que descrever cores/tipos em texto. O arquivo gerado é executável e autoverifica — se abrir no navegador, vejo se ficou fiel.
+
+---
+
+#### Prompt 2 — Meta-engenharia de prompt (ChatGPT → Claude Code)
+
+**Contexto**: eu tinha uma ideia curta e ambígua do que queria construir — um marketplace de economia circular universitário. Em vez de mandar essa ideia bruta pro Claude Code (que geraria algo genérico), usei o **ChatGPT como prompt engineer**: pedi para ele **refinar meu prompt aplicando técnicas modernas** (XML tags, tom mandatório, seções bem definidas), e só então mandei o resultado pro Claude Code executar.
+
+**Etapa 2.1 — o prompt curto que enviei ao ChatGPT** (com um prompt pequeno embutido pra ele refinar):
 
 ```
+Utilize todas as técnicas atuais de prompt engineering para melhorar o prompt
+abaixo afim de extrair os melhores resultados possíveis de um agente de IA
+para programação. Use marcações com tags xml, e seja mandatório com a IA:
+
+Você é um agente especialista em desenvolvimento Full Stack, design moderno,
+responsivo, estratégias avançadas de UI/UX, arquitetura de software e APIs REST.
+
+Construa uma plataforma web/mobile para um Marketplace de Economia Circular
+Universitária. O objetivo é permitir que estudantes anunciem itens para venda
+ou doação dentro da universidade (livros, apostilas, xerox, calculadoras,
+componentes eletrônicos, jalecos, móveis, etc).
+
+O sistema deve permitir criar/editar/excluir/listar/pesquisar/favoritar anúncios,
+com dashboard moderna, landing page persuasiva, telas de login/cadastro,
+CRUD completo, filtros por categoria e por venda/doação.
+
+Deve seguir obrigatoriamente e unicamente o Design System em
+@design_system/design-system.html — proibido criar cores ou componentes novos.
+
+Backend: API REST com endpoints POST/GET/GET:id/PUT/DELETE + filtros,
+persistência em SQLite/JSON/memória, JSON in/out.
+Frontend: HTML5 + CSS3 + JS ES6+ puros (proibido React/Vue/Tailwind/jQuery).
+
+Estrutura de arquivos: /index.html, /css/, /js/, /img/, /fonts/, /backend/,
+README.md, package.json.
+
+Entregue projeto completo, funcional, sem TODOs, sem placeholders,
+sem código fictício.
+```
+
+**Etapa 2.2 — o mega-prompt XML resultante que o ChatGPT devolveu** (esse foi o que colei no Claude Code):
+
+```xml
 <role>
 Engenheiro Staff/Sênior. Full Stack + Clean Architecture + Design Systems + WCAG 2.2.
 Nunca use pseudocódigo, TODOs, placeholders. Todo código deve ser executável.
 </role>
 
-<objective>
-Desenvolver Marketplace de Economia Circular Universitária.
-</objective>
+<objective>Desenvolver Marketplace de Economia Circular Universitária.</objective>
 
 <designSystem>
 Utilize EXCLUSIVAMENTE o Design System em @design_system/design-system.html
-- Não criar novas cores.
-- Não alterar tipografia.
-- Não alterar tokens.
+- Não criar novas cores. - Não alterar tipografia. - Não alterar tokens.
 </designSystem>
 
 <techStack>
@@ -540,20 +624,14 @@ Frontend: SÓ HTML5, CSS3, JS ES6+. Proibido React, Vue, Angular, Tailwind, jQue
 Backend: escolher UMA opção entre Node/Express, FastAPI, Spring Boot etc.
 </techStack>
 
-<features>
-Auth completo, CRUD de anúncios, categorias, dashboard, favoritos, busca com filtros.
-</features>
+<features>Auth, CRUD de anúncios, categorias, dashboard, favoritos, busca+filtros.</features>
 
-<pages>
-Landing, Login, Cadastro, Dashboard, Listagem, Detalhes, Criar, Editar, Perfil, Favoritos, 404.
-</pages>
+<pages>Landing, Login, Cadastro, Dashboard, Listagem, Detalhes, Criar, Editar, Perfil,
+Favoritos, 404.</pages>
 
 <qualityRequirements>
-1. Definir arquitetura antes de codar.
-2. Explicar organização das pastas.
-3. Explicar o fluxo da aplicação.
-4. Explicar a comunicação Frontend ↔ Backend.
-5. Explicar o modelo de dados.
+1. Definir arquitetura antes de codar. 2. Explicar organização das pastas.
+3. Explicar o fluxo. 4. Explicar comunicação Frontend ↔ Backend. 5. Explicar modelo de dados.
 </qualityRequirements>
 
 <outputRules>
@@ -562,29 +640,9 @@ automaticamente na resposta seguinte sem repetir conteúdo.
 </outputRules>
 ```
 
-**Resultado**: scaffold completo em uma única iteração (58 arquivos). Revisei manualmente cada arquivo antes de aceitar. Detectei duas coisas que precisei corrigir: (1) `<a>` aninhado em `<a>` no navbar quando o usuário não estava logado, (2) uso de `i.pravatar.cc` como fallback de avatar gerando fotos aleatórias entre requisições.
+**Resultado**: scaffold completo em uma única iteração (58 arquivos: backend Clean Architecture + 11 páginas HTML + CSS modular + JS organizado por página + docs). Revisei manualmente cada arquivo antes de aceitar. Detectei duas coisas que precisei corrigir depois: (1) `<a>` aninhado em `<a>` no navbar quando o usuário não estava logado; (2) uso de `i.pravatar.cc` como fallback de avatar gerando fotos aleatórias entre requisições — ambos documentados abaixo em "Momentos em que a IA errou".
 
-**Aprendizado**: prompts com estrutura XML forte + regras explícitas de "não faça X" produzem código muito mais alinhado do que descrições genéricas.
-
----
-
-#### Prompt 2 — Debug de HTTP 405 durante testes locais
-
-**Contexto**: tentei criar uma conta no navegador e a request retornava HTTP 405. Não sabia se o erro era no fetch, no backend, ou na configuração.
-
-```
-Prompt (real):
-"pq quando eu tento criar uma conta ou tentar ver os itens da erro http 405"
-```
-
-**Como a IA respondeu**:
-1. Diagnosticou que 405 = "Method Not Allowed" e que Live Server (extensão do VS Code que eu estava usando) só aceita GET — então as requests POST estavam batendo no Live Server em vez do backend Express.
-2. Propôs duas soluções: rodar apenas o Express (que serve os HTMLs também) OU adaptar o `api.js` para sempre apontar para `localhost:3333` independentemente da porta do frontend.
-3. Aplicou a segunda solução (mais robusta) diretamente no código.
-
-**Minha validação**: reproduzi o cenário, confirmei que o `api.js` novo pega a porta 3333 quando estou em outra origin. Testei os dois modos (Express-only e Live Server + backend separado) — ambos funcionam.
-
-**Aprendizado**: prompts curtos e descritivos do sintoma funcionam bem quando o modelo já tem contexto do projeto. Não precisei explicar arquitetura — a IA lembrava do `api.js` e correlacionou.
+**Aprendizado**: usar um LLM para **refinar prompts de outro LLM** é uma técnica poderosa. O ChatGPT é bom em pattern-matching de "boas práticas de prompt engineering" (XML, mandatório, seções), enquanto o Claude Code é bom em **executar** esses prompts refinados. Cada modelo no seu ponto forte. Também aprendi que prompts com estrutura XML forte + regras explícitas de "não faça X" produzem código muito mais alinhado do que descrições genéricas.
 
 ---
 

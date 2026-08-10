@@ -88,19 +88,27 @@ ul{list-style:none}
 
 /* ============================================================
    NAVBAR
+   Safe-area-inset-top: respeita a status bar do celular quando
+   o PWA está instalado em modo standalone (iOS notch + Android
+   status bar). Sem isso, o conteúdo passa por baixo do relógio.
 ============================================================ */
 .navbar{
   position:sticky;top:0;left:0;right:0;z-index:80;
-  height:var(--doc-nav-h);
+  min-height:var(--doc-nav-h);
+  padding-top:env(safe-area-inset-top);
   background:rgba(13,24,68,.82);
   backdrop-filter:blur(14px);
   -webkit-backdrop-filter:blur(14px);
   border-bottom:1px solid var(--hairline);
 }
 .navbar__inner{
-  max-width:var(--shell);height:100%;margin:0 auto;
+  max-width:var(--shell);
+  height:var(--doc-nav-h);
+  margin:0 auto;
   display:flex;align-items:center;gap:1.5rem;
   padding:0 clamp(1rem,4vw,2.5rem);
+  padding-left:max(clamp(1rem,4vw,2.5rem), env(safe-area-inset-left));
+  padding-right:max(clamp(1rem,4vw,2.5rem), env(safe-area-inset-right));
 }
 .brand{
   font-size:18px;font-weight:700;letter-spacing:.14em;

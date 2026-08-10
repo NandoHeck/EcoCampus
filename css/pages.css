@@ -188,10 +188,14 @@
   display:grid;grid-template-columns:1fr;
   background:radial-gradient(ellipse 90% 60% at 50% 0%,
     var(--bg-glow) 0%, #2746b9 35%, var(--bg-royal) 65%, var(--bg-deep) 100%);
+  padding-top:env(safe-area-inset-top);
+  padding-bottom:env(safe-area-inset-bottom);
 }
 .auth-wrap{
   width:100%;max-width:440px;margin:0 auto;
   padding:2.5rem 1.5rem 3rem;
+  padding-left:max(1.5rem, env(safe-area-inset-left));
+  padding-right:max(1.5rem, env(safe-area-inset-right));
   display:flex;flex-direction:column;justify-content:center;
 }
 .auth-brand{display:flex;justify-content:center;margin-bottom:1.8rem}
@@ -424,7 +428,12 @@
 .notfound{
   min-height:100vh;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  text-align:center;padding:2rem;gap:1.2rem;
+  text-align:center;gap:1.2rem;
+  padding:2rem;
+  padding-top:max(2rem, env(safe-area-inset-top));
+  padding-bottom:max(2rem, env(safe-area-inset-bottom));
+  padding-left:max(2rem, env(safe-area-inset-left));
+  padding-right:max(2rem, env(safe-area-inset-right));
 }
 .notfound__code{
   font-size:clamp(84px,18vw,180px);font-weight:800;letter-spacing:-.05em;

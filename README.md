@@ -52,20 +52,6 @@
 
 ---
 
-## 📸 Screenshots
-
-_Adicione aqui prints reais após rodar a aplicação._
-
-| Landing | Dashboard | Detalhe do anúncio |
-|---|---|---|
-| _screenshot_ | _screenshot_ | _screenshot_ |
-
-| Mobile — bottom nav | PWA instalável | Modo offline |
-|---|---|---|
-| _screenshot_ | _screenshot_ | _screenshot_ |
-
----
-
 ## 🧱 Stack e tecnologias
 
 ### Frontend
@@ -429,16 +415,6 @@ Instruções completas passo-a-passo em [`DEPLOY.md`](./DEPLOY.md).
 
 ---
 
-## 🗺️ Próximos passos
-
-- [ ] Upload real de imagens (Cloudinary free tier).
-- [ ] Sistema de notificações in-app.
-- [ ] GitHub Actions rodando `npm test` a cada push.
-- [ ] Migração para Postgres real (Neon/Supabase) se o projeto crescer.
-- [ ] Refresh tokens + JWT com expiração.
-
----
-
 ## 📁 Estrutura do repositório
 
 ```
@@ -476,7 +452,6 @@ EcoCampus/
 │       ├── presentation/           # Routes, controllers, middlewares
 │       └── shared/                 # Errors + utils
 ├── design_system/                  # Design System de referência (Nexus)
-├── docs/                           # Documentação adicional (screenshots etc)
 ├── .env.example
 ├── .gitignore
 ├── render.yaml                     # Blueprint Render
